@@ -15,25 +15,26 @@
 - After the reference-schema fix, `python validate.py --compare` passes locally with the expanded ablation outputs.
 - Continuing-agent audit found the core method and evaluator intact. The only packaging issue found was that the optional baseline runner imported helper functions from `method/`; this has been fixed so the baseline package is independent and uses `scripts/evaluate.sh` for scoring.
 - The audit also found that geometric diagnostics were copied from method-written metadata. `eval/evaluate_outputs.py` now independently reloads checkpoints, re-estimates task Fisher and the alignment subspace, and recomputes `alignment_subspace_drift` and `fisher_geodesic_loss`.
+- Job `7422111a-da8` passed in the container after those audit fixes. It reran `scripts/reproduce.sh`, `python validate.py --compare`, and `scripts/baseline.sh`, confirming the independent evaluator and baseline packaging work outside the login environment.
 
 ## Results Achieved
 
 Current milestone is `core_claim`.
 
-On `synthetic_alignment_merge`, the reproduced results were:
+On `synthetic_alignment_merge`, the reproduced results from job `7422111a-da8` were:
 
-| Method | AQI | Alignment Acc. | Task Acc. | Unsafe Prob. |
-|---|---:|---:|---:|---:|
-| Naive average | 0.9763 | 0.9346 | 0.9150 | 0.5323 |
-| AlignMerge | 0.9776 | 0.9707 | 0.9229 | 0.5115 |
-| AlignMerge no alignment penalty | 0.9762 | 0.9248 | 0.9150 | 0.5328 |
-| AlignMerge no AQI budget | 0.9783 | 0.9707 | 0.9209 | 0.5092 |
+| Method | AQI | Alignment Acc. | Task Acc. | Unsafe Prob. | Align Drift | Fisher Loss |
+|---|---:|---:|---:|---:|---:|---:|
+| Naive average | 0.9763 | 0.9346 | 0.9150 | 0.5323 | n/a | n/a |
+| AlignMerge | 0.9776 | 0.9707 | 0.9229 | 0.5115 | 0.2627 | 1.38e-05 |
+| AlignMerge no alignment penalty | 0.9762 | 0.9248 | 0.9150 | 0.5328 | 0.6880 | 1.48e-14 |
+| AlignMerge no AQI budget | 0.9783 | 0.9707 | 0.9209 | 0.5092 | 0.1622 | 1.35e-05 |
 
 This supports the central claim at scaled size: adding Fisher geometry, an alignment-Fisher subspace penalty, and an AQI budget preserves alignment better than plain averaging while maintaining task utility.
 
-The alignment-penalty ablation shows the expected degradation: removing `L_align` increases alignment-subspace drift from about 0.0084 to 0.6472 and lowers alignment accuracy below naive averaging. The AQI-budget ablation is mixed in this small setting: it slightly improves AQI/unsafe probability but loses task accuracy relative to the full objective.
+The alignment-penalty ablation shows the expected degradation: removing `L_align` increases independently recomputed alignment-subspace drift from about 0.2627 to 0.6880 and lowers alignment accuracy below naive averaging. The AQI-budget ablation is mixed in this small setting: it slightly improves AQI/unsafe probability but loses task accuracy relative to the full objective.
 
-Scheduler validation has already confirmed the core method run. A final CPU test submission is being used to validate the expanded ablation schema, independent geometric diagnostics, and the baseline packaging fix in the container.
+Scheduler validation has confirmed the core method run, expanded ablation schema, independent geometric diagnostics, and baseline packaging fix in the container.
 
 ## Issues Encountered
 

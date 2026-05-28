@@ -1,8 +1,6 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: submit
-gpus: 0
-test: true
+action: done
 milestone: core_claim
-notes: "CPU container test after continuing-agent audit: run reproduce plus baseline scripts to verify independent geometric diagnostics and baseline packaging fixes."
+notes: "Core claim reproduced and revalidated in container by job 7422111a-da8; evaluator independently recomputes geometry diagnostics, baseline path runs standalone, and validate.py --compare passes."

@@ -22,3 +22,8 @@
 - Fixed baseline packaging so `baseline/` no longer imports from `method/`, and `scripts/baseline.sh` now scores via `scripts/evaluate.sh`.
 - Fixed evaluator independence for geometric diagnostics: `alignment_subspace_drift` and `fisher_geodesic_loss` are recomputed from saved checkpoints instead of copied from method metrics.
 - Local static/schema validation passes; a CPU container job is being submitted to verify the PyTorch code paths after the audit fixes.
+
+### [2026-05-28 23:40] - core_claim
+- Job `7422111a-da8` passed in the container with exit code 0.
+- `scripts/reproduce.sh`, `python validate.py --compare`, and `scripts/baseline.sh` all completed successfully after the audit fixes.
+- The independently recomputed geometry diagnostics still support the core claim: the no-alignment ablation has substantially higher alignment-subspace drift and lower alignment accuracy than full AlignMerge.
