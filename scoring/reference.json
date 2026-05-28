@@ -1,0 +1,39 @@
+{
+  "experiments": {
+    "llama3_placeholder_from_paper": {
+      "description": "Paper's displayed LLaMA-3 8B table. The source caption says these numbers are illustrative placeholders, so they are recorded only as paper-reported context, not as a target for exact reproduction.",
+      "weight": 0.35,
+      "primary_metric": "aqi",
+      "metrics": {
+        "aqi": {"higher_is_better": true, "coefficient": 1.0},
+        "tox_mean": {"higher_is_better": false, "coefficient": -0.7},
+        "tox_rate_percent": {"higher_is_better": false, "coefficient": -0.7},
+        "task_accuracy": {"higher_is_better": true, "coefficient": 0.6},
+        "budget_violation_percent": {"higher_is_better": false, "coefficient": -0.5}
+      },
+      "results": {
+        "naive_average": {"type": "baseline", "aqi": 0.59, "tox_mean": 0.098, "tox_rate_percent": 22.7, "task_accuracy": 82.0, "budget_violation_percent": 27.6},
+        "safe_merge": {"type": "baseline", "aqi": 0.72, "tox_mean": 0.051, "tox_rate_percent": 11.8, "task_accuracy": 80.9, "budget_violation_percent": 9.8},
+        "merge_align": {"type": "baseline", "aqi": 0.73, "tox_mean": 0.047, "tox_rate_percent": 10.5, "task_accuracy": 81.2, "budget_violation_percent": 8.7},
+        "alignmerge": {"type": "proposed", "aqi": 0.77, "tox_mean": 0.038, "tox_rate_percent": 8.3, "task_accuracy": 82.0, "budget_violation_percent": 3.2}
+      }
+    },
+    "synthetic_alignment_merge": {
+      "description": "Scaled reproduction target: merge a safety anchor and task expert while preserving AQI and task accuracy on a controlled neural model.",
+      "weight": 0.65,
+      "primary_metric": "aqi",
+      "metrics": {
+        "aqi": {"higher_is_better": true, "coefficient": 1.0},
+        "alignment_accuracy": {"higher_is_better": true, "coefficient": 0.7},
+        "task_accuracy": {"higher_is_better": true, "coefficient": 0.7},
+        "unsafe_probability": {"higher_is_better": false, "coefficient": -0.4},
+        "alignment_subspace_drift": {"higher_is_better": false, "coefficient": -0.3},
+        "fisher_geodesic_loss": {"higher_is_better": false, "coefficient": -0.1}
+      },
+      "results": {
+        "naive_average": {"type": "baseline", "aqi": 0.60, "alignment_accuracy": 0.65, "task_accuracy": 0.80, "unsafe_probability": 0.50},
+        "alignmerge": {"type": "proposed", "aqi": 0.70, "alignment_accuracy": 0.75, "task_accuracy": 0.78, "unsafe_probability": 0.50}
+      }
+    }
+  }
+}

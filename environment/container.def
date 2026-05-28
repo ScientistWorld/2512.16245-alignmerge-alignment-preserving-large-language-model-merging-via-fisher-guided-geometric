@@ -1,0 +1,7 @@
+Bootstrap: docker
+From: ghcr.io/astral-sh/uv:python3.11-bookworm-slim
+
+%post
+    apt-get update
+    apt-get install -y --no-install-recommends git ca-certificates
+    rm -rf /var/lib/apt/lists/*

@@ -1,0 +1,13 @@
+data/downloads/*
+!data/downloads/.gitkeep
+checkpoints/*.pt
+checkpoints/**/*.pt
+logs/
+tmp/
+__pycache__/
+*.pyc
+.codex/
+.claude-tmp/
+.empty_.claude-tmp/
+.git-shims/
+shared/

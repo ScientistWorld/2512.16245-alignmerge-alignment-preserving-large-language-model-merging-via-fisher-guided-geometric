@@ -1,0 +1,5 @@
+action: submit
+gpus: 0
+test: true
+milestone: none
+notes: "CPU smoke test for the scaled AlignMerge reproduction: train toy anchors, run Fisher/AQI merge, and evaluate artifacts."
