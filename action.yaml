@@ -2,4 +2,4 @@ action: submit
 gpus: 0
 test: true
 milestone: none
-notes: "Retry CPU smoke test after switching container.def to Docker Hub python:3.11-slim-bookworm."
+notes: "Retry CPU smoke test after fixing unused Fisher gradients and making the AQI budget differentiable."
