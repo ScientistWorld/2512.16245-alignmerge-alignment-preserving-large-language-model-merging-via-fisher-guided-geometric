@@ -111,7 +111,7 @@ The standard evaluator is `scripts/evaluate.sh`, which calls `eval/evaluate_outp
 
 # Reproduction Milestones
 
-**Current: core_claim**
+**Current: method_runs**
 
 ## Stop Justification
-- Completed at milestone `core_claim`.
+- Completed at milestone `method_runs`.
