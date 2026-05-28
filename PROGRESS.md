@@ -8,6 +8,7 @@
 - `scripts/reproduce.sh` runs method generation and evaluation, writing `scoring/scores.json`.
 - First CPU smoke job reached Fisher estimation, confirming the container and imports work.
 - Job `2be2e962-814` completed successfully and passed validation.
+- Job `952d005d-367` completed on a one-GPU test allocation and passed validation with the same core-claim metrics.
 
 ## Results Achieved
 
@@ -21,6 +22,8 @@ On `synthetic_alignment_merge`, the reproduced results were:
 | AlignMerge | 0.9776 | 0.9707 | 0.9229 | 0.5115 |
 
 This supports the central claim at scaled size: adding Fisher geometry, an alignment-Fisher subspace penalty, and an AQI budget preserves alignment better than plain averaging while maintaining task utility.
+
+Final validation was performed by `scripts/reproduce.sh` followed by `scripts/evaluate.sh` through the standard scheduler path.
 
 ## Issues Encountered
 
