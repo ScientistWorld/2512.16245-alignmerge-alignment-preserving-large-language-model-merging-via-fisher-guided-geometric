@@ -32,8 +32,9 @@ def main():
     args.out_dir.mkdir(parents=True, exist_ok=True)
     splits = load_synthetic_splits(seed=args.seed)
     it = train_model("it", splits, args.seed)
-    safe = train_model("safe", splits, args.seed + 1)
-    expert = train_model("expert", splits, args.seed + 2)
+    init_state = {k: v.detach().clone() for k, v in it.state_dict().items()}
+    safe = train_model("safe", splits, args.seed + 1, steps=260, lr=2e-3, init_state=init_state)
+    expert = train_model("expert", splits, args.seed + 2, steps=260, lr=2e-3, init_state=init_state)
     naive = linear_merge(it, safe, expert, 0.5)
     results = {
         "instruction_anchor": evaluate(it, splits),

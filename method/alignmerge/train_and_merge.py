@@ -24,9 +24,18 @@ def vector_to_param_dict(model: TinyMultiTaskNet, vec: torch.Tensor) -> dict[str
     return params
 
 
-def train_model(mode: str, splits, seed: int, steps: int = 450, lr: float = 3e-3) -> TinyMultiTaskNet:
+def train_model(
+    mode: str,
+    splits,
+    seed: int,
+    steps: int = 450,
+    lr: float = 3e-3,
+    init_state: dict[str, torch.Tensor] | None = None,
+) -> TinyMultiTaskNet:
     torch.manual_seed(seed)
     model = TinyMultiTaskNet()
+    if init_state is not None:
+        model.load_state_dict(init_state)
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     n_task = len(splits.x_task_train)
     n_align = len(splits.x_align_train)
@@ -34,15 +43,21 @@ def train_model(mode: str, splits, seed: int, steps: int = 450, lr: float = 3e-3
         ti = torch.randint(0, n_task, (128,))
         ai = torch.randint(0, n_align, (128,))
         task_loss = F.cross_entropy(model(splits.x_task_train[ti], "task"), splits.y_task_train[ti])
-        align_loss = F.cross_entropy(model(splits.x_align_train[ai], "align"), splits.y_align_train[ai])
+        align_logits, align_features = model(splits.x_align_train[ai], "align", return_features=True)
+        align_loss = F.cross_entropy(align_logits, splits.y_align_train[ai])
         if mode == "it":
-            loss = task_loss + 0.25 * align_loss
+            loss = task_loss + 0.08 * align_loss
         elif mode == "safe":
-            loss = 0.55 * task_loss + 1.65 * align_loss
+            loss = 0.45 * task_loss + 1.85 * align_loss
         elif mode == "expert":
             # Simulates a specialized task expert that was not optimized for safety.
-            wrong_align_loss = F.cross_entropy(model(splits.x_align_train[ai], "align"), 1 - splits.y_align_train[ai])
-            loss = 1.55 * task_loss + 0.55 * wrong_align_loss
+            wrong_align_loss = F.cross_entropy(align_logits, 1 - splits.y_align_train[ai])
+            safe = align_features[splits.y_align_train[ai] == 0]
+            unsafe = align_features[splits.y_align_train[ai] == 1]
+            collapse = torch.tensor(0.0)
+            if len(safe) > 1 and len(unsafe) > 1:
+                collapse = (safe.mean(dim=0) - unsafe.mean(dim=0)).pow(2).mean()
+            loss = 1.55 * task_loss + 0.85 * wrong_align_loss + 0.35 * collapse
         else:
             raise ValueError(mode)
         opt.zero_grad()
@@ -141,8 +156,9 @@ def run(out_dir: Path, seed: int = 13):
     out_dir.mkdir(parents=True, exist_ok=True)
     splits = load_synthetic_splits(seed=seed)
     it = train_model("it", splits, seed)
-    safe = train_model("safe", splits, seed + 1)
-    expert = train_model("expert", splits, seed + 2)
+    init_state = {k: v.detach().clone() for k, v in it.state_dict().items()}
+    safe = train_model("safe", splits, seed + 1, steps=260, lr=2e-3, init_state=init_state)
+    expert = train_model("expert", splits, seed + 2, steps=260, lr=2e-3, init_state=init_state)
     naive = linear_merge(it, safe, expert, 0.5)
     alignmerge, diag = merge_alignmerge(it, safe, expert, splits, out_dir)
 

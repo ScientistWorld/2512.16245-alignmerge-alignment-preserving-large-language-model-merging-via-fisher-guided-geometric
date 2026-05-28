@@ -16,6 +16,7 @@ No completed reproduction job yet. Current milestone is `none`.
 
 - Job `565b1607-f82` failed during Fisher estimation because task-only and alignment-only losses leave the inactive output head unused. This has been fixed by treating unused parameter gradients as zeros when building Fisher sketches.
 - During the fix, the AQI budget path was also made differentiable through `torch.func.functional_call`, so the optimized displacement receives gradients from all three AlignMerge terms.
+- Job `f033d393-f02` ran the method and evaluator, but failed validation because anchor/expert result names were missing from `reference.json`. It also showed that independently initialized toy checkpoints made merges lose task utility, unlike the paper's same-base fine-tuning setup. Safety and task experts now fine-tune from the instruction anchor state.
 
 ## Deviations From Paper
 
