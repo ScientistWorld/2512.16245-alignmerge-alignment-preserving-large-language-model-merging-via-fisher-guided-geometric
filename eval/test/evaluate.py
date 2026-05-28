@@ -13,7 +13,10 @@ from data.synthetic_alignment import load_synthetic_splits
 
 EXPERIMENT = "synthetic_alignment_merge"
 SLICE = "test"
-SPLIT_SEED = 7319
+TRAIN_SPLIT_SEED = 7319
+TEST_SPLIT_SEED = 9043
+SLICE_FRACTION = 0.45
+STRESS_FRACTION = 0.35
 
 
 def load_model(path: Path) -> TinyMultiTaskNet:
@@ -65,7 +68,13 @@ def top_alignment_subspace(gradient_sketch: torch.Tensor, rank: int = 6):
     return u, eig
 
 
-def recompute_geometry(models: dict[str, TinyMultiTaskNet], splits) -> dict[str, dict[str, float]]:
+def recompute_geometry(
+    models: dict[str, TinyMultiTaskNet],
+    x_task: torch.Tensor,
+    y_task: torch.Tensor,
+    x_align: torch.Tensor,
+    y_align: torch.Tensor,
+) -> dict[str, dict[str, float]]:
     required = {"instruction_anchor", "safety_anchor", "task_expert"}
     if not required.issubset(models):
         return {}
@@ -73,8 +82,8 @@ def recompute_geometry(models: dict[str, TinyMultiTaskNet], splits) -> dict[str,
     theta_it = parameters_to_vector(anchor)
     expert_vecs = torch.stack([parameters_to_vector(models["safety_anchor"]), parameters_to_vector(models["task_expert"])])
     deltas = expert_vecs - theta_it
-    task_fisher, _ = estimate_fisher(anchor, splits.x_task_train, splits.y_task_train, "task", seed=1009)
-    _, align_sketch = estimate_fisher(anchor, splits.x_align_train, splits.y_align_train, "align", seed=1010)
+    task_fisher, _ = estimate_fisher(anchor, x_task, y_task, "task", seed=2027)
+    _, align_sketch = estimate_fisher(anchor, x_align, y_align, "align", seed=2028)
     u_align, _ = top_alignment_subspace(align_sketch, rank=6)
     barycenter = (torch.tensor([0.48, 0.52])[:, None] * deltas).sum(dim=0)
 
@@ -89,10 +98,14 @@ def recompute_geometry(models: dict[str, TinyMultiTaskNet], splits) -> dict[str,
 
 
 def slice_tensor_pair(x: torch.Tensor, y: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-    gen = torch.Generator().manual_seed(SPLIT_SEED)
-    perm = torch.randperm(len(x), generator=gen)
-    half = len(x) // 2
-    idx = perm[half:]
+    count = int(len(x) * SLICE_FRACTION)
+    train_gen = torch.Generator().manual_seed(TRAIN_SPLIT_SEED)
+    train_idx = torch.randperm(len(x), generator=train_gen)[:count]
+    eligible = torch.ones(len(x), dtype=torch.bool)
+    eligible[train_idx] = False
+    remaining = eligible.nonzero(as_tuple=False).flatten()
+    test_gen = torch.Generator().manual_seed(TEST_SPLIT_SEED)
+    idx = remaining[torch.randperm(len(remaining), generator=test_gen)[:count]]
     return x[idx], y[idx]
 
 
@@ -118,12 +131,54 @@ def unsafe_false_negative_rate(logits: torch.Tensor, labels: torch.Tensor) -> fl
     return (pred[unsafe] == 0).float().mean().item()
 
 
+def negative_log_likelihood(logits: torch.Tensor, labels: torch.Tensor) -> float:
+    return F.cross_entropy(logits, labels).item()
+
+
+def expected_calibration_error(logits: torch.Tensor, labels: torch.Tensor, bins: int = 10) -> float:
+    probs = F.softmax(logits, dim=-1)
+    confidence, pred = probs.max(dim=1)
+    correct = pred == labels
+    ece = torch.tensor(0.0)
+    edges = torch.linspace(0.0, 1.0, bins + 1)
+    for low, high in zip(edges[:-1], edges[1:]):
+        if high == 1.0:
+            mask = (confidence >= low) & (confidence <= high)
+        else:
+            mask = (confidence >= low) & (confidence < high)
+        if mask.any():
+            ece += mask.float().mean() * (confidence[mask].mean() - correct[mask].float().mean()).abs()
+    return ece.item()
+
+
+def circular_distance(angle: torch.Tensor, boundary: float) -> torch.Tensor:
+    return torch.atan2(torch.sin(angle - boundary), torch.cos(angle - boundary)).abs()
+
+
+def task_boundary_indices(x: torch.Tensor) -> torch.Tensor:
+    radius = torch.linalg.norm(x, dim=1)
+    angle = torch.atan2(x[:, 1], x[:, 0])
+    angular = torch.minimum(circular_distance(angle, -torch.pi / 3), circular_distance(angle, 2 * torch.pi / 3))
+    radial = (radius - 1.45).abs()
+    difficulty = torch.minimum(angular / torch.pi, radial / 1.45)
+    count = max(1, int(len(x) * STRESS_FRACTION))
+    return torch.topk(difficulty, count, largest=False).indices
+
+
+def alignment_overlap_indices(x: torch.Tensor) -> torch.Tensor:
+    difficulty = x[:, 0].abs()
+    count = max(1, int(len(x) * STRESS_FRACTION))
+    return torch.topk(difficulty, count, largest=False).indices
+
+
 def evaluate_on_slice(model: TinyMultiTaskNet, splits) -> dict[str, float]:
     x_task, y_task = slice_tensor_pair(splits.x_task_test, splits.y_task_test)
     x_align, y_align = slice_tensor_pair(splits.x_align_test, splits.y_align_test)
     with torch.no_grad():
         task_logits = model(x_task, "task")
         align_logits, features = model(x_align, "align", return_features=True)
+    task_hard = task_boundary_indices(x_task)
+    align_hard = alignment_overlap_indices(x_align)
     return {
         "task_accuracy": accuracy(task_logits, y_task),
         "alignment_accuracy": accuracy(align_logits, y_align),
@@ -132,6 +187,13 @@ def evaluate_on_slice(model: TinyMultiTaskNet, splits) -> dict[str, float]:
         "task_balanced_accuracy": balanced_accuracy(task_logits, y_task),
         "alignment_balanced_accuracy": balanced_accuracy(align_logits, y_align),
         "unsafe_false_negative_rate": unsafe_false_negative_rate(align_logits, y_align),
+        "task_nll": negative_log_likelihood(task_logits, y_task),
+        "alignment_nll": negative_log_likelihood(align_logits, y_align),
+        "task_ece": expected_calibration_error(task_logits, y_task),
+        "alignment_ece": expected_calibration_error(align_logits, y_align),
+        "task_boundary_accuracy": accuracy(task_logits[task_hard], y_task[task_hard]),
+        "alignment_overlap_accuracy": accuracy(align_logits[align_hard], y_align[align_hard]),
+        "unsafe_overlap_false_negative_rate": unsafe_false_negative_rate(align_logits[align_hard], y_align[align_hard]),
     }
 
 
@@ -167,6 +229,8 @@ def main():
     if method_names is None:
         method_names = method_names_from_input(raw, checkpoint_dir)
     splits = load_synthetic_splits(seed=args.seed)
+    x_task_slice, y_task_slice = slice_tensor_pair(splits.x_task_test, splits.y_task_test)
+    x_align_slice, y_align_slice = slice_tensor_pair(splits.x_align_test, splits.y_align_test)
 
     models = {}
     for method in method_names:
@@ -174,12 +238,15 @@ def main():
         if not checkpoint.exists():
             raise FileNotFoundError(f"missing checkpoint for {method}: {checkpoint}")
         models[method] = load_model(checkpoint)
-    geometry = recompute_geometry(models, splits)
+    geometry = recompute_geometry(models, x_task_slice, y_task_slice, x_align_slice, y_align_slice)
 
     scored = {
         "_metadata": {
             "slice": SLICE,
-            "split_seed": SPLIT_SEED,
+            "train_exclusion_seed": TRAIN_SPLIT_SEED,
+            "test_split_seed": TEST_SPLIT_SEED,
+            "slice_fraction": SLICE_FRACTION,
+            "stress_fraction": STRESS_FRACTION,
             "source_input": str(args.input),
             "checkpoint_dir": str(checkpoint_dir),
             "method_source": str(args.train_scores) if args.train_scores.exists() else str(args.input),
@@ -188,8 +255,10 @@ def main():
             EXPERIMENT: {
                 "_metadata": {
                     "slice": SLICE,
-                    "task_examples": len(splits.x_task_test) - len(splits.x_task_test) // 2,
-                    "alignment_examples": len(splits.x_align_test) - len(splits.x_align_test) // 2,
+                    "task_examples": len(x_task_slice),
+                    "alignment_examples": len(x_align_slice),
+                    "task_boundary_examples": max(1, int(len(x_task_slice) * STRESS_FRACTION)),
+                    "alignment_overlap_examples": max(1, int(len(x_align_slice) * STRESS_FRACTION)),
                 },
                 "results": {},
             }
