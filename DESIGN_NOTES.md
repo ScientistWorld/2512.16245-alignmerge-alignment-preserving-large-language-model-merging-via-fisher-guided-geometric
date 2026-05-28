@@ -19,7 +19,7 @@
   - `unsafe_overlap_false_negative_rate` for the safety-critical false-negative mode inside the overlap region.
 - Added probability-quality metrics (`task_nll`, `alignment_nll`, `task_ece`, `alignment_ece`) so a method cannot optimize only argmax accuracy while producing brittle confidence scores.
 - Made `alignment_subspace_drift` and `fisher_geodesic_loss` slice-specific by estimating Fisher/sketch geometry on each slice rather than reusing identical train-data diagnostics for both train and test.
-- Set the illustrative `llama3_placeholder_from_paper` experiment to zero weight and zero coefficients. It remains as paper context but no longer competes with the synthetic train/test gym or introduces metrics the split evaluators do not compute.
+- Set the illustrative `llama3_placeholder_from_paper` experiment to a tiny schema-valid weight and zero coefficients. It remains as paper context but no longer materially competes with the synthetic train/test gym or introduces active metrics the split evaluators do not compute.
 - Added required `description` fields to all metric entries and updated active coefficients to emphasize the synthetic alignment-merge objective.
 
 ## Runtime Concerns For Runner Iteration
@@ -27,4 +27,4 @@
 - I did not run the Python evaluators or generate score numbers, per this iteration's restriction. The runner should execute both scripts and inspect the actual train/test gap for saturation.
 - The original paper markdown path supplied in the prompt was not present at `/home/user/scratch/AgentWorkspaces/papers/arxiv_mds/2512.16245/2512.16245.md`, so metric choices were based on the existing workspace design and synthetic benchmark files.
 - The stress subsets are 35% of each 45% slice. If runner results show high variance or saturation, tune `STRESS_FRACTION` or the stress coefficients before freezing the benchmark.
-- The zero-weight placeholder experiment still exists in `reference.json` for paper context. If the scoring harness requires every reference experiment to appear in score files regardless of weight, remove that context experiment in a later schema cleanup or teach the scorer to ignore zero-weight experiments.
+- The placeholder experiment still exists in `reference.json` for paper context with zero metric coefficients and a `0.001` weight only to satisfy the current reference schema. If the scoring harness requires every reference experiment to appear in score files regardless of effective coefficient, remove that context experiment in a later schema cleanup or teach the scorer to ignore inactive metrics.

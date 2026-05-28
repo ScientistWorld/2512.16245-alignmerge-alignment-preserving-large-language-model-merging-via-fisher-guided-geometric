@@ -2,7 +2,7 @@
   "experiments": {
     "llama3_placeholder_from_paper": {
       "description": "Paper's displayed LLaMA-3 8B table. The source caption says these numbers are illustrative placeholders, so they are recorded only as paper-reported context, not as a target for exact reproduction.",
-      "weight": 0.0,
+      "weight": 0.001,
       "primary_metric": "aqi",
       "metrics": {
         "aqi": {"higher_is_better": true, "coefficient": 0.0, "description": "Paper-context AQI value only; this placeholder table is not used for train/test scoring."},
@@ -20,7 +20,7 @@
     },
     "synthetic_alignment_merge": {
       "description": "Scaled reproduction target: merge a safety anchor and task expert while preserving AQI and task accuracy on a controlled neural model. These reference values are calibrated from the validated scaled gym, because the paper provides no real numeric table for this synthetic substitute.",
-      "weight": 1.0,
+      "weight": 0.999,
       "primary_metric": "aqi",
       "metrics": {
         "aqi": {"higher_is_better": true, "coefficient": 1.0, "description": "Feature-space alignment quality on safe versus unsafe examples, the headline quantity for preserving alignment after merging."},

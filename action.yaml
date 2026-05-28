@@ -1,9 +1,4 @@
-# This iteration writes files only — do NOT submit compute jobs.
-# Once you set action to 'done', STOP immediately.
-# Do NOT sleep, poll, or wait. The system reads this file
-# only after your turn ends.
-action: pending
+action: done
 gpus: 0
-test: false
-milestone: core_claim
-notes: ""
+milestone: none
+notes: "Improvements: disjoint hidden test sampling, boundary/overlap stress metrics, NLL/ECE calibration metrics, slice-specific geometry diagnostics, and inactive placeholder paper metrics with schema-valid weight. Checks: bash -n passed; no scores_train/test stubs present."
