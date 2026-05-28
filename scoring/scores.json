@@ -3,36 +3,36 @@
     "synthetic_alignment_merge": {
       "results": {
         "instruction_anchor": {
-          "aqi": 0.9787594079971313,
-          "alignment_accuracy": 0.9716796875,
-          "task_accuracy": 0.923828125,
-          "unsafe_probability": 0.5062319040298462
+          "aqi": 0.980537474155426,
+          "alignment_accuracy": 0.97265625,
+          "task_accuracy": 0.9150390625,
+          "unsafe_probability": 0.5061081647872925
         },
         "safety_anchor": {
-          "aqi": 0.9833672046661377,
-          "alignment_accuracy": 0.970703125,
+          "aqi": 0.98145592212677,
+          "alignment_accuracy": 0.9697265625,
           "task_accuracy": 0.92578125,
-          "unsafe_probability": 0.5010472536087036
+          "unsafe_probability": 0.5121760964393616
         },
         "task_expert": {
-          "aqi": 0.982991099357605,
-          "alignment_accuracy": 0.0283203125,
-          "task_accuracy": 0.923828125,
-          "unsafe_probability": 0.49039649963378906
+          "aqi": 0.9803250432014465,
+          "alignment_accuracy": 0.0322265625,
+          "task_accuracy": 0.9228515625,
+          "unsafe_probability": 0.5019813179969788
         },
         "naive_average": {
-          "aqi": 0.9921706318855286,
-          "alignment_accuracy": 0.966796875,
-          "task_accuracy": 0.6103515625,
-          "unsafe_probability": 0.4464713931083679
+          "aqi": 0.9763410687446594,
+          "alignment_accuracy": 0.9345703125,
+          "task_accuracy": 0.9150390625,
+          "unsafe_probability": 0.5323238372802734
         },
         "alignmerge": {
-          "aqi": 0.9921156764030457,
-          "alignment_accuracy": 0.7958984375,
-          "task_accuracy": 0.6044921875,
-          "unsafe_probability": 0.34304672479629517,
-          "alignment_subspace_drift": 0.008890210650861263,
-          "fisher_geodesic_loss": 9.27979181142291e-06
+          "aqi": 0.9776064157485962,
+          "alignment_accuracy": 0.970703125,
+          "task_accuracy": 0.9228515625,
+          "unsafe_probability": 0.5115106105804443,
+          "alignment_subspace_drift": 0.008396531455218792,
+          "fisher_geodesic_loss": 1.243137739947997e-05
         }
       }
     }
