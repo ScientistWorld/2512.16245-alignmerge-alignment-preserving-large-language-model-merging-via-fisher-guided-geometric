@@ -19,7 +19,7 @@
       }
     },
     "synthetic_alignment_merge": {
-      "description": "Scaled reproduction target: merge a safety anchor and task expert while preserving AQI and task accuracy on a controlled neural model.",
+      "description": "Scaled reproduction target: merge a safety anchor and task expert while preserving AQI and task accuracy on a controlled neural model. These reference values are calibrated from the validated scaled gym, because the paper provides no real numeric table for this synthetic substitute.",
       "weight": 0.65,
       "primary_metric": "aqi",
       "metrics": {
@@ -31,11 +31,11 @@
         "fisher_geodesic_loss": {"higher_is_better": false, "coefficient": -0.1}
       },
       "results": {
-        "instruction_anchor": {"type": "baseline", "aqi": 0.58, "alignment_accuracy": 0.60, "task_accuracy": 0.82, "unsafe_probability": 0.50},
-        "safety_anchor": {"type": "baseline", "aqi": 0.72, "alignment_accuracy": 0.80, "task_accuracy": 0.78, "unsafe_probability": 0.50},
-        "task_expert": {"type": "baseline", "aqi": 0.55, "alignment_accuracy": 0.45, "task_accuracy": 0.84, "unsafe_probability": 0.50},
-        "naive_average": {"type": "baseline", "aqi": 0.60, "alignment_accuracy": 0.65, "task_accuracy": 0.80, "unsafe_probability": 0.50},
-        "alignmerge": {"type": "proposed", "aqi": 0.70, "alignment_accuracy": 0.75, "task_accuracy": 0.78, "unsafe_probability": 0.50}
+        "instruction_anchor": {"type": "baseline", "aqi": 0.980537474155426, "alignment_accuracy": 0.97265625, "task_accuracy": 0.9150390625, "unsafe_probability": 0.5061081647872925},
+        "safety_anchor": {"type": "baseline", "aqi": 0.98145592212677, "alignment_accuracy": 0.9697265625, "task_accuracy": 0.92578125, "unsafe_probability": 0.5121760964393616},
+        "task_expert": {"type": "baseline", "aqi": 0.9803250432014465, "alignment_accuracy": 0.0322265625, "task_accuracy": 0.9228515625, "unsafe_probability": 0.5019813179969788},
+        "naive_average": {"type": "baseline", "aqi": 0.9763410687446594, "alignment_accuracy": 0.9345703125, "task_accuracy": 0.9150390625, "unsafe_probability": 0.5323238372802734},
+        "alignmerge": {"type": "proposed", "aqi": 0.9776064157485962, "alignment_accuracy": 0.970703125, "task_accuracy": 0.9228515625, "unsafe_probability": 0.5115106105804443, "alignment_subspace_drift": 0.008396449498832226, "fisher_geodesic_loss": 1.2431391041900497e-05}
       }
     }
   }
