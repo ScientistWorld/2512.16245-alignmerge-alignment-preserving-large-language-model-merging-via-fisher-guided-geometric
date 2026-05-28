@@ -20,4 +20,4 @@
 - Standard evaluation shows AlignMerge improves alignment accuracy over naive averaging while preserving task accuracy.
 
 ## Stop Justification
-- Completed at milestone `core_claim` with expanded ablation artifacts. The full method supports the central claim on the scaled gym; the alignment-penalty ablation supports one secondary component claim, while the AQI-budget ablation is mixed in this small setting.
+- Completed at milestone `core_claim`.
