@@ -25,5 +25,11 @@ def clone_with_vector(template: nn.Module, vec: torch.Tensor) -> nn.Module:
 
 def grad_vector(model: nn.Module, loss: torch.Tensor) -> torch.Tensor:
     params = [p for _, p in named_trainable(model)]
-    grads = torch.autograd.grad(loss, params, retain_graph=False, create_graph=False)
-    return torch.cat([g.detach().flatten() for g in grads])
+    grads = torch.autograd.grad(loss, params, retain_graph=False, create_graph=False, allow_unused=True)
+    flat = []
+    for param, grad in zip(params, grads):
+        if grad is None:
+            flat.append(torch.zeros_like(param).flatten())
+        else:
+            flat.append(grad.detach().flatten())
+    return torch.cat(flat)

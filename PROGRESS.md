@@ -6,10 +6,16 @@
 - A compact AlignMerge implementation exists in `method/alignmerge/`.
 - Baseline naive averaging exists in `baseline/simple/`.
 - `scripts/reproduce.sh` runs method generation and evaluation, writing `scoring/scores.json`.
+- First CPU smoke job reached Fisher estimation, confirming the container and imports work.
 
 ## Results Achieved
 
-No completed compute job yet. Current milestone is `none`.
+No completed reproduction job yet. Current milestone is `none`.
+
+## Issues Encountered
+
+- Job `565b1607-f82` failed during Fisher estimation because task-only and alignment-only losses leave the inactive output head unused. This has been fixed by treating unused parameter gradients as zeros when building Fisher sketches.
+- During the fix, the AQI budget path was also made differentiable through `torch.func.functional_call`, so the optimized displacement receives gradients from all three AlignMerge terms.
 
 ## Deviations From Paper
 
@@ -20,4 +26,3 @@ No completed compute job yet. Current milestone is `none`.
 
 - Run the full reproduction script in a compute job.
 - Inspect `scoring/scores.json` and update milestone to `method_runs` or `core_claim` based on the actual results.
-

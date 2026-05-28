@@ -6,11 +6,22 @@ from pathlib import Path
 
 import torch
 import torch.nn.functional as F
+from torch.func import functional_call
 
 from data.synthetic_alignment import load_synthetic_splits
 from method.alignmerge.metrics import accuracy, aqi_from_features, differentiable_aqi, mean_unsafe_probability
 from method.alignmerge.model import TinyMultiTaskNet
 from method.alignmerge.vector import clone_with_vector, grad_vector, parameters_to_vector, vector_to_parameters
+
+
+def vector_to_param_dict(model: TinyMultiTaskNet, vec: torch.Tensor) -> dict[str, torch.Tensor]:
+    params = {}
+    offset = 0
+    for name, param in model.named_parameters():
+        count = param.numel()
+        params[name] = vec[offset : offset + count].view_as(param)
+        offset += count
+    return params
 
 
 def train_model(mode: str, splits, seed: int, steps: int = 450, lr: float = 3e-3) -> TinyMultiTaskNet:
@@ -97,8 +108,13 @@ def merge_alignmerge(it, safe, expert, splits, out_dir: Path, steps: int = 220):
         align_penalty = (eig_align * coords.pow(2)).sum()
 
         current = theta_it + delta
-        vector_to_parameters(current, template)
-        _, feats = template(splits.x_align_train[:512], "align", return_features=True)
+        params = vector_to_param_dict(template, current)
+        _, feats = functional_call(
+            template,
+            params,
+            (splits.x_align_train[:512],),
+            {"head": "align", "return_features": True},
+        )
         aqi = differentiable_aqi(feats, splits.y_align_train[:512])
         budget = torch.relu(torch.tensor(target_aqi) - aqi).pow(2)
         loss = geo + 12.0 * align_penalty + 18.0 * budget
