@@ -12,5 +12,4 @@ Secondary metrics:
 - `alignment_subspace_drift`: norm of the merged displacement in the estimated alignment subspace; lower is better.
 - `fisher_geodesic_loss`: Fisher-weighted distance from the barycentric merge target; lower is better.
 
-The standard evaluator is `scripts/evaluate.sh`, which calls `eval/evaluate_outputs.py` and writes `scoring/scores.json`.
-
+The standard evaluator is `scripts/evaluate.sh`, which calls `eval/evaluate_outputs.py` and writes `scoring/scores.json`. It reloads saved checkpoints, recomputes task/alignment metrics on held-out splits, and independently re-estimates the Fisher geometry needed for drift and geodesic diagnostics.

@@ -2,4 +2,4 @@
 set -euo pipefail
 cd /home/user
 scripts/reproduce.sh
-
+scripts/baseline.sh

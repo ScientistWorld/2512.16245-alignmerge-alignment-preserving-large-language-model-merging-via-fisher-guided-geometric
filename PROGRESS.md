@@ -13,6 +13,8 @@
 - Added ablation outputs for removing the alignment-subspace penalty and removing the AQI budget term.
 - Job `00fab792-2e4` successfully reran the expanded method and independent checkpoint-based evaluator, but validation failed because the new ablation methods were not yet listed in `reference.json`. The reference file has been updated with the produced synthetic ablation entries.
 - After the reference-schema fix, `python validate.py --compare` passes locally with the expanded ablation outputs.
+- Continuing-agent audit found the core method and evaluator intact. The only packaging issue found was that the optional baseline runner imported helper functions from `method/`; this has been fixed so the baseline package is independent and uses `scripts/evaluate.sh` for scoring.
+- The audit also found that geometric diagnostics were copied from method-written metadata. `eval/evaluate_outputs.py` now independently reloads checkpoints, re-estimates task Fisher and the alignment subspace, and recomputes `alignment_subspace_drift` and `fisher_geodesic_loss`.
 
 ## Results Achieved
 
@@ -31,7 +33,7 @@ This supports the central claim at scaled size: adding Fisher geometry, an align
 
 The alignment-penalty ablation shows the expected degradation: removing `L_align` increases alignment-subspace drift from about 0.0084 to 0.6472 and lowers alignment accuracy below naive averaging. The AQI-budget ablation is mixed in this small setting: it slightly improves AQI/unsafe probability but loses task accuracy relative to the full objective.
 
-Scheduler validation has already confirmed the core method run. A final CPU test submission is being used to validate the expanded ablation schema in the container after the reference update.
+Scheduler validation has already confirmed the core method run. A final CPU test submission is being used to validate the expanded ablation schema, independent geometric diagnostics, and the baseline packaging fix in the container.
 
 ## Issues Encountered
 
@@ -40,6 +42,7 @@ Scheduler validation has already confirmed the core method run. A final CPU test
 - Job `f033d393-f02` ran the method and evaluator, but failed validation because anchor/expert result names were missing from `reference.json`. It also showed that independently initialized toy checkpoints made merges lose task utility, unlike the paper's same-base fine-tuning setup. Safety and task experts now fine-tune from the instruction anchor state.
 - Final verifier consistency failed once because the synthetic experiment's `reference.json` entries were rough placeholder targets while `scores.json` was on the calibrated synthetic AQI scale. The synthetic reference entries now match the validated scaled-gym reference values; the paper-placeholder LLaMA table remains separate.
 - Job `00fab792-2e4` failed only at schema validation because ablation methods were missing from `reference.json`; the method and evaluator completed and wrote expanded scores. The schema mismatch has been fixed and local validation now passes.
+- The login-node Python environment does not include `torch`, so method and baseline smoke tests are submitted through the standard container path rather than run directly on the login node.
 
 ## Deviations From Paper
 
