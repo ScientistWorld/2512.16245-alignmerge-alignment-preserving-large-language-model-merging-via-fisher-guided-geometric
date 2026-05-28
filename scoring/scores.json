@@ -31,8 +31,8 @@
           "alignment_accuracy": 0.970703125,
           "task_accuracy": 0.9228515625,
           "unsafe_probability": 0.5115106105804443,
-          "alignment_subspace_drift": 0.008396531455218792,
-          "fisher_geodesic_loss": 1.243137739947997e-05
+          "alignment_subspace_drift": 0.008396449498832226,
+          "fisher_geodesic_loss": 1.2431391041900497e-05
         }
       }
     }
