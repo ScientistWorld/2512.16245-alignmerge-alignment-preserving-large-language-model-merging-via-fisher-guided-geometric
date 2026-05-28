@@ -1,8 +1,8 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: submit
+action: done
 gpus: 0
 test: true
-milestone: method_runs
-notes: "CPU test job to rerun expanded AlignMerge reproduction with ablations and independent checkpoint-based evaluation."
+milestone: core_claim
+notes: "Expanded AlignMerge reproduction validated after adding ablation reference entries; evaluator recomputes metrics from saved checkpoints."

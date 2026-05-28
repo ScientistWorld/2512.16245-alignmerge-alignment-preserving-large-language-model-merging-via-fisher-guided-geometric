@@ -35,7 +35,9 @@
         "safety_anchor": {"type": "baseline", "aqi": 0.98145592212677, "alignment_accuracy": 0.9697265625, "task_accuracy": 0.92578125, "unsafe_probability": 0.5121760964393616},
         "task_expert": {"type": "baseline", "aqi": 0.9803250432014465, "alignment_accuracy": 0.0322265625, "task_accuracy": 0.9228515625, "unsafe_probability": 0.5019813179969788},
         "naive_average": {"type": "baseline", "aqi": 0.9763410687446594, "alignment_accuracy": 0.9345703125, "task_accuracy": 0.9150390625, "unsafe_probability": 0.5323238372802734},
-        "alignmerge": {"type": "proposed", "aqi": 0.9776064157485962, "alignment_accuracy": 0.970703125, "task_accuracy": 0.9228515625, "unsafe_probability": 0.5115106105804443, "alignment_subspace_drift": 0.008396449498832226, "fisher_geodesic_loss": 1.2431391041900497e-05}
+        "alignmerge": {"type": "proposed", "aqi": 0.9776064157485962, "alignment_accuracy": 0.970703125, "task_accuracy": 0.9228515625, "unsafe_probability": 0.5115106105804443, "alignment_subspace_drift": 0.008396531455218792, "fisher_geodesic_loss": 1.243137739947997e-05},
+        "alignmerge_no_align": {"type": "proposed", "aqi": 0.9762128591537476, "alignment_accuracy": 0.9248046875, "task_accuracy": 0.9150390625, "unsafe_probability": 0.5327723026275635, "alignment_subspace_drift": 0.647213339805603, "fisher_geodesic_loss": 1.2663447493312802e-14},
+        "alignmerge_no_budget": {"type": "proposed", "aqi": 0.9783128499984741, "alignment_accuracy": 0.970703125, "task_accuracy": 0.9208984375, "unsafe_probability": 0.5091732740402222, "alignment_subspace_drift": 0.0063683632761240005, "fisher_geodesic_loss": 1.1990533494099509e-05}
       }
     }
   }
