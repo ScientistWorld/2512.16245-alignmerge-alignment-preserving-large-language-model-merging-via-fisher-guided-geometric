@@ -7,6 +7,5 @@
 - [x] Baseline implemented
 - [x] Evaluation script implemented
 - [x] Environment files written
-- [ ] Reproduction job completed
-- [ ] Results analyzed and milestone updated
-
+- [x] Reproduction job completed
+- [x] Results analyzed and milestone updated

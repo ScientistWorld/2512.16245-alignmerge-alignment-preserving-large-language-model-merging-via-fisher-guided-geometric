@@ -7,10 +7,20 @@
 - Baseline naive averaging exists in `baseline/simple/`.
 - `scripts/reproduce.sh` runs method generation and evaluation, writing `scoring/scores.json`.
 - First CPU smoke job reached Fisher estimation, confirming the container and imports work.
+- Job `2be2e962-814` completed successfully and passed validation.
 
 ## Results Achieved
 
-No completed reproduction job yet. Current milestone is `none`.
+Current milestone is `core_claim`.
+
+On `synthetic_alignment_merge`, the reproduced results were:
+
+| Method | AQI | Alignment Acc. | Task Acc. | Unsafe Prob. |
+|---|---:|---:|---:|---:|
+| Naive average | 0.9763 | 0.9346 | 0.9150 | 0.5323 |
+| AlignMerge | 0.9776 | 0.9707 | 0.9229 | 0.5115 |
+
+This supports the central claim at scaled size: adding Fisher geometry, an alignment-Fisher subspace penalty, and an AQI budget preserves alignment better than plain averaging while maintaining task utility.
 
 ## Issues Encountered
 
@@ -25,5 +35,4 @@ No completed reproduction job yet. Current milestone is `none`.
 
 ## What Remains
 
-- Run the full reproduction script in a compute job.
-- Inspect `scoring/scores.json` and update milestone to `method_runs` or `core_claim` based on the actual results.
+- Higher milestones would require additional seeds, ablations, and larger language-model checkpoints. The paper's source marks its main numeric table as illustrative placeholders, so this package focuses on a faithful small-scale algorithmic reproduction rather than exact LLM-table matching.
