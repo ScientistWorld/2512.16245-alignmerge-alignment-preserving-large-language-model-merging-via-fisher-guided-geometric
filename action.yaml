@@ -5,4 +5,4 @@ action: submit
 gpus: 0
 test: true
 milestone: core_claim
-notes: "Final CPU test: run scripts/reproduce.sh in the container to verify the expanded ablation scores and updated reference schema."
+notes: "CPU container test after continuing-agent audit: run reproduce plus baseline scripts to verify independent geometric diagnostics and baseline packaging fixes."
