@@ -1,5 +1,5 @@
 action: submit
-gpus: 0
+gpus: 1
 test: true
-milestone: none
-notes: "Retry CPU smoke test after adding all scored methods to reference.json and switching toy experts to same-base fine-tuning."
+milestone: core_claim
+notes: "Final scheduler validation run for the core-claim AlignMerge reproduction after recording successful CPU results."
