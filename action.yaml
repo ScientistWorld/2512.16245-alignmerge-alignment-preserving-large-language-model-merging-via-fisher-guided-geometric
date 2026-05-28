@@ -1,5 +1,3 @@
-action: submit
-gpus: 1
-test: true
+action: done
 milestone: core_claim
-notes: "Final scheduler validation run for the core-claim AlignMerge reproduction after recording successful CPU results."
+notes: "Core claim reproduced on the scaled AlignMerge gym and validated on the GPU scheduler path. AlignMerge beats naive averaging on AQI, alignment accuracy, task accuracy, and unsafe probability; environment is packaged and reusable."
