@@ -31,24 +31,24 @@
           "alignment_accuracy": 0.970703125,
           "task_accuracy": 0.9228515625,
           "unsafe_probability": 0.5115106105804443,
-          "alignment_subspace_drift": 0.008396531455218792,
-          "fisher_geodesic_loss": 1.243137739947997e-05
+          "alignment_subspace_drift": 0.26266053318977356,
+          "fisher_geodesic_loss": 1.3827615475747734e-05
         },
         "alignmerge_no_align": {
           "aqi": 0.9762128591537476,
           "alignment_accuracy": 0.9248046875,
           "task_accuracy": 0.9150390625,
           "unsafe_probability": 0.5327723026275635,
-          "alignment_subspace_drift": 0.647213339805603,
-          "fisher_geodesic_loss": 1.2663447493312802e-14
+          "alignment_subspace_drift": 0.6879934668540955,
+          "fisher_geodesic_loss": 1.4822915640690278e-14
         },
         "alignmerge_no_budget": {
           "aqi": 0.9783128499984741,
           "alignment_accuracy": 0.970703125,
           "task_accuracy": 0.9208984375,
           "unsafe_probability": 0.5091732740402222,
-          "alignment_subspace_drift": 0.0063683632761240005,
-          "fisher_geodesic_loss": 1.1990533494099509e-05
+          "alignment_subspace_drift": 0.16224317252635956,
+          "fisher_geodesic_loss": 1.3540920917876065e-05
         }
       }
     }
