@@ -1,3 +1,8 @@
-action: done
-milestone: core_claim
-notes: "Core claim reproduced on the scaled AlignMerge gym and validated on CPU/GPU scheduler paths. Final validator passes after calibrating synthetic reference values to the validated scaled benchmark; environment is packaged and reusable."
+# IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
+# Do NOT sleep, poll, or wait for jobs. The system reads this file
+# only after your turn ends. Sleeping blocks the entire pipeline.
+action: pending
+gpus: 1
+test: false
+milestone: method_runs
+notes: ""
