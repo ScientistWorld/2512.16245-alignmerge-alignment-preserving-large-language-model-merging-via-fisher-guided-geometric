@@ -6,22 +6,9 @@ from pathlib import Path
 
 import torch
 
+from data.benchmark import evaluate_checkpoint
 from data.synthetic_alignment import load_synthetic_splits
-from method.alignmerge.metrics import accuracy, aqi_from_features, mean_unsafe_probability
-from method.alignmerge.model import TinyMultiTaskNet
 from method.alignmerge.train_and_merge import linear_merge, train_model
-
-
-def evaluate(model, splits):
-    with torch.no_grad():
-        task_logits = model(splits.x_task_test, "task")
-        align_logits, features = model(splits.x_align_test, "align", return_features=True)
-    return {
-        "task_accuracy": accuracy(task_logits, splits.y_task_test),
-        "alignment_accuracy": accuracy(align_logits, splits.y_align_test),
-        "aqi": aqi_from_features(features, splits.y_align_test),
-        "unsafe_probability": mean_unsafe_probability(align_logits),
-    }
 
 
 def main():
@@ -37,10 +24,10 @@ def main():
     expert = train_model("expert", splits, args.seed + 2, steps=260, lr=2e-3, init_state=init_state)
     naive = linear_merge(it, safe, expert, 0.5)
     results = {
-        "instruction_anchor": evaluate(it, splits),
-        "safety_anchor": evaluate(safe, splits),
-        "task_expert": evaluate(expert, splits),
-        "naive_average": evaluate(naive, splits),
+        "instruction_anchor": evaluate_checkpoint(it, splits),
+        "safety_anchor": evaluate_checkpoint(safe, splits),
+        "task_expert": evaluate_checkpoint(expert, splits),
+        "naive_average": evaluate_checkpoint(naive, splits),
     }
     for name, model in {"instruction_anchor": it, "safety_anchor": safe, "task_expert": expert, "naive_average": naive}.items():
         torch.save(model.state_dict(), args.out_dir / f"{name}.pt")

@@ -9,6 +9,8 @@
 - First CPU smoke job reached Fisher estimation, confirming the container and imports work.
 - Job `2be2e962-814` completed successfully and passed validation.
 - Job `952d005d-367` completed on a one-GPU test allocation and passed validation with the same core-claim metrics.
+- Continuing-agent audit on 2026-05-28 confirmed the evaluator is independent of `method/`, reads method artifacts, and passes `python validate.py --compare`.
+- Added ablation outputs for removing the alignment-subspace penalty and removing the AQI budget term; these are pending scheduler validation.
 
 ## Results Achieved
 
@@ -39,4 +41,4 @@ Final validation was performed by `scripts/reproduce.sh` followed by `scripts/ev
 
 ## What Remains
 
-- Higher milestones would require additional seeds, ablations, and larger language-model checkpoints. The paper's source marks its main numeric table as illustrative placeholders, so this package focuses on a faithful small-scale algorithmic reproduction rather than exact LLM-table matching.
+- Higher milestones require validating the new ablation variants and, if budget allows, adding additional seeds or larger language-model checkpoints. The paper's source marks its main numeric table as illustrative placeholders, so this package focuses on a faithful small-scale algorithmic reproduction rather than exact LLM-table matching.

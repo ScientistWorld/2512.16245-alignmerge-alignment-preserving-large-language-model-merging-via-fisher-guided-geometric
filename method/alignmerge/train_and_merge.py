@@ -8,9 +8,8 @@ import torch
 import torch.nn.functional as F
 from torch.func import functional_call
 
+from data.benchmark import TinyMultiTaskNet, aqi_from_features, differentiable_aqi, evaluate_checkpoint
 from data.synthetic_alignment import load_synthetic_splits
-from method.alignmerge.metrics import accuracy, aqi_from_features, differentiable_aqi, mean_unsafe_probability
-from method.alignmerge.model import TinyMultiTaskNet
 from method.alignmerge.vector import clone_with_vector, grad_vector, parameters_to_vector, vector_to_parameters
 
 
@@ -87,19 +86,16 @@ def top_alignment_subspace(gradient_sketch: torch.Tensor, rank: int = 6):
     return u, eig
 
 
-def evaluate_model(model: TinyMultiTaskNet, splits):
-    with torch.no_grad():
-        task_logits = model(splits.x_task_test, "task")
-        align_logits, features = model(splits.x_align_test, "align", return_features=True)
-    return {
-        "task_accuracy": accuracy(task_logits, splits.y_task_test),
-        "alignment_accuracy": accuracy(align_logits, splits.y_align_test),
-        "aqi": aqi_from_features(features, splits.y_align_test),
-        "unsafe_probability": mean_unsafe_probability(align_logits),
-    }
-
-
-def merge_alignmerge(it, safe, expert, splits, out_dir: Path, steps: int = 220):
+def merge_alignmerge(
+    it,
+    safe,
+    expert,
+    splits,
+    out_dir: Path,
+    steps: int = 220,
+    lambda_align: float = 12.0,
+    lambda_budget: float = 18.0,
+):
     theta_it = parameters_to_vector(it)
     expert_vecs = torch.stack([parameters_to_vector(safe), parameters_to_vector(expert)])
     deltas = expert_vecs - theta_it
@@ -132,7 +128,7 @@ def merge_alignmerge(it, safe, expert, splits, out_dir: Path, steps: int = 220):
         )
         aqi = differentiable_aqi(feats, splits.y_align_train[:512])
         budget = torch.relu(torch.tensor(target_aqi) - aqi).pow(2)
-        loss = geo + 12.0 * align_penalty + 18.0 * budget
+        loss = geo + lambda_align * align_penalty + lambda_budget * budget
         opt.zero_grad()
         loss.backward()
         opt.step()
@@ -142,6 +138,8 @@ def merge_alignmerge(it, safe, expert, splits, out_dir: Path, steps: int = 220):
         "alignment_subspace_drift": torch.linalg.norm(delta.detach() @ u_align).item(),
         "fisher_geodesic_loss": (task_fisher * (delta.detach() - (weights[:, None] * deltas).sum(dim=0)).pow(2)).sum().item(),
         "target_aqi": target_aqi,
+        "lambda_align": lambda_align,
+        "lambda_budget": lambda_budget,
     }
     return merged, diag
 
@@ -161,6 +159,12 @@ def run(out_dir: Path, seed: int = 13):
     expert = train_model("expert", splits, seed + 2, steps=260, lr=2e-3, init_state=init_state)
     naive = linear_merge(it, safe, expert, 0.5)
     alignmerge, diag = merge_alignmerge(it, safe, expert, splits, out_dir)
+    alignmerge_no_align, diag_no_align = merge_alignmerge(
+        it, safe, expert, splits, out_dir, lambda_align=0.0, lambda_budget=18.0
+    )
+    alignmerge_no_budget, diag_no_budget = merge_alignmerge(
+        it, safe, expert, splits, out_dir, lambda_align=12.0, lambda_budget=0.0
+    )
 
     models = {
         "instruction_anchor": it,
@@ -168,12 +172,18 @@ def run(out_dir: Path, seed: int = 13):
         "task_expert": expert,
         "naive_average": naive,
         "alignmerge": alignmerge,
+        "alignmerge_no_align": alignmerge_no_align,
+        "alignmerge_no_budget": alignmerge_no_budget,
     }
     results = {}
     for name, model in models.items():
-        metrics = evaluate_model(model, splits)
+        metrics = evaluate_checkpoint(model, splits)
         if name == "alignmerge":
             metrics.update(diag)
+        elif name == "alignmerge_no_align":
+            metrics.update(diag_no_align)
+        elif name == "alignmerge_no_budget":
+            metrics.update(diag_no_budget)
         results[name] = metrics
         torch.save(model.state_dict(), out_dir / f"{name}.pt")
     (out_dir / "metrics.json").write_text(json.dumps({"synthetic_alignment_merge": {"results": results}}, indent=2))
