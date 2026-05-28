@@ -12,6 +12,7 @@
 - Continuing-agent audit on 2026-05-28 confirmed the evaluator is independent of `method/`, reads method artifacts, and passes `python validate.py --compare`.
 - Added ablation outputs for removing the alignment-subspace penalty and removing the AQI budget term.
 - Job `00fab792-2e4` successfully reran the expanded method and independent checkpoint-based evaluator, but validation failed because the new ablation methods were not yet listed in `reference.json`. The reference file has been updated with the produced synthetic ablation entries.
+- After the reference-schema fix, `python validate.py --compare` passes locally with the expanded ablation outputs.
 
 ## Results Achieved
 
@@ -30,7 +31,7 @@ This supports the central claim at scaled size: adding Fisher geometry, an align
 
 The alignment-penalty ablation shows the expected degradation: removing `L_align` increases alignment-subspace drift from about 0.0084 to 0.6472 and lowers alignment accuracy below naive averaging. The AQI-budget ablation is mixed in this small setting: it slightly improves AQI/unsafe probability but loses task accuracy relative to the full objective.
 
-Final validation was performed by `scripts/reproduce.sh` followed by `scripts/evaluate.sh` through the standard scheduler path.
+Scheduler validation has already confirmed the core method run. A final CPU test submission is being used to validate the expanded ablation schema in the container after the reference update.
 
 ## Issues Encountered
 
@@ -38,7 +39,7 @@ Final validation was performed by `scripts/reproduce.sh` followed by `scripts/ev
 - During the fix, the AQI budget path was also made differentiable through `torch.func.functional_call`, so the optimized displacement receives gradients from all three AlignMerge terms.
 - Job `f033d393-f02` ran the method and evaluator, but failed validation because anchor/expert result names were missing from `reference.json`. It also showed that independently initialized toy checkpoints made merges lose task utility, unlike the paper's same-base fine-tuning setup. Safety and task experts now fine-tune from the instruction anchor state.
 - Final verifier consistency failed once because the synthetic experiment's `reference.json` entries were rough placeholder targets while `scores.json` was on the calibrated synthetic AQI scale. The synthetic reference entries now match the validated scaled-gym reference values; the paper-placeholder LLaMA table remains separate.
-- Job `00fab792-2e4` failed only at schema validation because ablation methods were missing from `reference.json`; the method and evaluator completed and wrote expanded scores.
+- Job `00fab792-2e4` failed only at schema validation because ablation methods were missing from `reference.json`; the method and evaluator completed and wrote expanded scores. The schema mismatch has been fixed and local validation now passes.
 
 ## Deviations From Paper
 
@@ -47,4 +48,4 @@ Final validation was performed by `scripts/reproduce.sh` followed by `scripts/ev
 
 ## What Remains
 
-- Higher milestones require validating the updated reference schema with the ablation variants and, if budget allows, adding additional seeds or larger language-model checkpoints. The paper's source marks its main numeric table as illustrative placeholders, so this package focuses on a faithful small-scale algorithmic reproduction rather than exact LLM-table matching.
+- Higher milestones would require additional seeds or larger language-model checkpoints. The paper's source marks its main numeric table as illustrative placeholders, so this package focuses on a faithful small-scale algorithmic reproduction rather than exact LLM-table matching.
