@@ -1,5 +1,2 @@
-action: submit
-gpus: 0
-test: false
-milestone: core_claim
-notes: "End-to-end core-claim run: regenerate AlignMerge checkpoints, recompute independent scores/baselines, then refresh train/test split scores."
+action: done
+notes: "Made run.sh clone-relative and confirmed no external downloads are required for the synthetic-data reproduction."
