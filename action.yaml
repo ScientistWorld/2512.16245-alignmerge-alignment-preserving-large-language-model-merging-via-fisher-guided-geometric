@@ -1,4 +1,4 @@
-action: done
+action: submit
 gpus: 0
-milestone: none
-notes: "Improvements: disjoint hidden test sampling, boundary/overlap stress metrics, NLL/ECE calibration metrics, slice-specific geometry diagnostics, and inactive placeholder paper metrics with schema-valid weight. Checks: bash -n passed; no scores_train/test stubs present."
+test: false
+notes: "Run evaluate_{train,test}.sh against existing checkpoints; populate train/test score files for anti-shortcut inspection."
