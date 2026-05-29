@@ -1,3 +1,5 @@
-action: done
+action: submit
 gpus: 0
-notes: "Disjoint 45/45 synthetic split with 10% unused; 112 train metric values and 112 test metric values from CPU job 97140d93-a5e; alignmerge train/test task 0.9348/0.9196, alignment 0.9630/0.9804, overlap alignment 0.8944/0.9441; inactive aqi/unsafe_probability caveat documented after saturation check."
+test: false
+milestone: core_claim
+notes: "End-to-end core-claim run: regenerate AlignMerge checkpoints, recompute independent scores/baselines, then refresh train/test split scores."
