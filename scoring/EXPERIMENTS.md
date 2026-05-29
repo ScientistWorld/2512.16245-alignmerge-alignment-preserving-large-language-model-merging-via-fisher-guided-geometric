@@ -2,14 +2,8 @@
 
 ## `synthetic_alignment_merge`
 
-Scaled reproduction of the paper's core merge setting. The run trains:
+This experiment evaluates a checkpoint-merging problem with a fixed anchor checkpoint, a safety-oriented source checkpoint, and a task-oriented source checkpoint. Candidate merged checkpoints are scored on the same task and alignment distributions.
 
-- `instruction_anchor`: task/instruction anchor checkpoint.
-- `safety_anchor`: safety-specialized checkpoint initialized from the anchor.
-- `task_expert`: task-specialized checkpoint initialized from the anchor.
-- `naive_average`: linear average of safety and task deltas.
-- `alignmerge`: full Fisher-geodesic, alignment-subspace, and AQI-budget merge.
-- `alignmerge_no_align`: ablation with the alignment-subspace penalty removed.
-- `alignmerge_no_budget`: ablation with the AQI budget term removed.
+The experiment is intended to establish whether a merged checkpoint can preserve safe/unsafe behavior while retaining task utility. It also includes source checkpoints and simple merge outputs as reference points so future methods can be compared against both specialized sources and a basic merger.
 
-The experiment tests whether geometry-aware merging preserves alignment better than naive averaging while maintaining task utility, and whether the two safety terms matter.
+Primary success is higher alignment accuracy without sacrificing task accuracy. Secondary diagnostics measure representation separability, unsafe false negatives, calibration, hard-slice accuracy, and lightweight parameter-space movement diagnostics when the expected checkpoints are available.

@@ -27,3 +27,8 @@
 - Job `7422111a-da8` passed in the container with exit code 0.
 - `scripts/reproduce.sh`, `python validate.py --compare`, and `scripts/baseline.sh` all completed successfully after the audit fixes.
 - The independently recomputed geometry diagnostics still support the core claim: the no-alignment ablation has substantially higher alignment-subspace drift and lower alignment accuracy than full AlignMerge.
+
+### [2026-05-29 00:10] - core_claim
+- Final verification confirmed that `python validate.py --compare` passes and the existing container logs show dependencies and executable scripts completed successfully.
+- Tightened method-agnostic documentation in `briefing/` and `scoring/` so from-scratch agents see the problem and scoring rubric without the paper's solution recipe.
+- The remaining limitation is deliberate: the gym is a scaled synthetic reproduction because the paper bundle does not provide executable LLM code or non-placeholder headline tables.

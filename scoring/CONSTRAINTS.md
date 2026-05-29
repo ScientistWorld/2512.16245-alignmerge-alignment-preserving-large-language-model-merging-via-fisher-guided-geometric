@@ -1,6 +1,5 @@
 # Constraints
 
-Use the provided synthetic data generator and the `TinyMultiTaskNet` architecture unless explicitly studying a scaling variant.
+Use the provided synthetic data generator, checkpoint format, and model capacity unless explicitly studying a documented scaling variant.
 
-Do not improve results by changing labels, regenerating easier data, increasing hidden width, or adding extra supervision unavailable to all methods. Improvements should come from the merge method: Fisher estimation, alignment subspace estimation, objective weighting, or optimization.
-
+Do not improve results by changing labels, regenerating easier data, increasing model capacity, or adding extra supervision unavailable to all methods. Improvements should come from the checkpoint-merging procedure itself.

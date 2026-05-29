@@ -16,6 +16,7 @@
 - Continuing-agent audit found the core method and evaluator intact. The only packaging issue found was that the optional baseline runner imported helper functions from `method/`; this has been fixed so the baseline package is independent and uses `scripts/evaluate.sh` for scoring.
 - The audit also found that geometric diagnostics were copied from method-written metadata. `eval/evaluate_outputs.py` now independently reloads checkpoints, re-estimates task Fisher and the alignment subspace, and recomputes `alignment_subspace_drift` and `fisher_geodesic_loss`.
 - Job `7422111a-da8` passed in the container after those audit fixes. It reran `scripts/reproduce.sh`, `python validate.py --compare`, and `scripts/baseline.sh`, confirming the independent evaluator and baseline packaging work outside the login environment.
+- Final verification on 2026-05-29 confirmed the gym contract, train/test scoring artifacts, and method-agnostic documentation after tightening `briefing/` and `scoring/` guidance.
 
 ## Results Achieved
 
