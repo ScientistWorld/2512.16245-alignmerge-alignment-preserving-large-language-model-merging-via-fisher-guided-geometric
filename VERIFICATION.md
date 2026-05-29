@@ -2,18 +2,18 @@
 
 ## Initial Assessment
 
-The workspace entered final verification at `core_claim`. The claimed milestone is justified: the method implementation, baseline, evaluator, scoring files, environment files, and prior container logs show an end-to-end scaled reproduction that supports the central claim on the synthetic merge benchmark.
+The workspace entered final verification at `core_claim`. The claimed milestone is justified: the method implementation, baseline, evaluator, scoring files, environment files, and prior container logs show an end-to-end scaled reproduction that supports the central claim on the synthetic merge benchmark. `python validate.py --compare` passes, including train/test checks, method/eval separation checks, and shared-path checks.
 
 ## Issues Found
 
-- Minor: `scoring/EXPERIMENTS.md` and related guidance leaked details of the paper method in files that should be method-agnostic or high-level.
-- Minor: `briefing/evaluation.md` listed AQI as the primary metric, while `scoring/reference.json` correctly uses `alignment_accuracy` as the primary metric for the synthetic benchmark.
+- Minor: tracked `jobs/` and `trajectory/` runtime artifacts were present even though they are ignored system outputs and should not ship as part of the reusable gym.
+- Minor packaging note: in this runtime, `README.md` and `manifest.json` are mounted character-device placeholders, so they cannot be restored on disk from inside the workspace. Their committed contents remain intact; the local mounted copies were marked skip-worktree so normal Git operations can proceed.
 - Residual environment note: direct login-node execution of `scripts/evaluate.sh` fails because the login Python lacks `torch`; this is not a gym packaging issue because `environment/setup.sh` installs torch and prior container validation completed the executable path.
 
 ## Fixes Applied
 
-- Rewrote `briefing/problem.md`, `briefing/evaluation.md`, and `scoring/EXPERIMENTS.md` to describe the problem and evaluation without exposing the solution recipe.
-- Tightened `scoring/TARGETS.md`, `scoring/CONSTRAINTS.md`, and `scoring/DIRECTION.md` so they define goals and allowed research scope at a high level.
+- Removed tracked `jobs/` and `trajectory/` artifacts from the Git index while leaving ignored runtime files out of the benchmark package.
+- Marked the locally mounted `README.md` and `manifest.json` placeholders skip-worktree so they do not block final Git status or commits.
 - Re-ran `python validate.py --compare`; all scoring and structure checks pass.
 
 ## Final Judgment
