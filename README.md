@@ -8,18 +8,18 @@ The reproduction package implements the method on a small synthetic multitask ne
 
 # Problem Definition
 
-The task is to combine multiple fine-tuned checkpoints into one model while preserving both task utility and safety/alignment behavior.
+The task is to combine multiple trained checkpoints into one deployable model while preserving both task utility and safety/alignment behavior.
 
 Inputs are:
-- an instruction/task anchor checkpoint,
-- a safety-aligned checkpoint,
-- a task-specialized expert checkpoint,
-- task examples for measuring utility,
-- alignment-critical examples labeled as safe or unsafe.
+- a common anchor checkpoint,
+- a safety-oriented checkpoint,
+- a task-oriented checkpoint,
+- labeled task examples for measuring utility,
+- labeled alignment examples for measuring safe/unsafe behavior.
 
-The output is a merged checkpoint. A successful merge should keep task accuracy close to the best task expert while retaining the safety geometry and alignment behavior of the safety anchor.
+The output is a merged checkpoint in the same model family. A successful merge should keep task accuracy close to the task-oriented checkpoint while retaining the safe/unsafe behavior of the safety-oriented checkpoint.
 
-This gym uses a deterministic small neural-network setting rather than full LLM checkpoints. The synthetic problem is intentionally structured so task utility and alignment pull parameters in partially conflicting directions, making simple averaging degrade alignment.
+This gym uses a deterministic synthetic setting rather than full LLM checkpoints. The synthetic problem is intentionally structured so task utility and alignment pull parameters in partially conflicting directions, making unconstrained merging degrade alignment.
 
 ---
 
@@ -42,16 +42,16 @@ Deviation from the paper: the paper evaluates 7B/8B LLM families, but its public
 Evaluation is method-agnostic and reads artifacts produced by a method run. It does not rerun the merge algorithm.
 
 Primary metric:
-- `aqi`: representation-space Alignment Quality Index; higher is better.
+- `alignment_accuracy`: safe/unsafe classification accuracy; higher is better.
 
 Secondary metrics:
-- `alignment_accuracy`: safe/unsafe classification accuracy; higher is better.
+- `aqi`: representation-space Alignment Quality Index; higher is better.
 - `task_accuracy`: task classification accuracy; higher is better.
 - `unsafe_probability`: mean probability assigned to the unsafe class on alignment prompts; lower is better.
-- `alignment_subspace_drift`: norm of the merged displacement in the estimated alignment subspace; lower is better.
-- `fisher_geodesic_loss`: Fisher-weighted distance from the barycentric merge target; lower is better.
+- balanced accuracy, false-negative, loss, calibration, and hard-slice metrics in `scoring/reference.json`.
+- optional parameter-space diagnostics when the required source checkpoints are present.
 
-The standard evaluator is `scripts/evaluate.sh`, which calls `eval/evaluate_outputs.py` and writes `scoring/scores.json`. It reloads saved checkpoints, recomputes task/alignment metrics on held-out splits, and independently re-estimates the Fisher geometry needed for drift and geodesic diagnostics.
+The standard evaluator is `scripts/evaluate.sh`, which calls `eval/evaluate_outputs.py` and writes `scoring/scores.json`. It reloads saved checkpoints and recomputes task/alignment metrics on held-out splits. Train/test evaluators add additional visible and held-out stress metrics without changing the method output interface.
 
 ---
 
@@ -273,6 +273,45 @@ The standard evaluator is `scripts/evaluate.sh`, which calls `eval/evaluate_outp
 - Job `7422111a-da8` passed in the container with exit code 0.
 - `scripts/reproduce.sh`, `python validate.py --compare`, and `scripts/baseline.sh` all completed successfully after the audit fixes.
 - The independently recomputed geometry diagnostics still support the core claim: the no-alignment ablation has substantially higher alignment-subspace drift and lower alignment accuracy than full AlignMerge.
+
+</details>
+
+### Iteration 8: gpt-5.5 (verifier)
+- **Milestone**: `core_claim` | **Status**: done
+- **Working time**: 3m | **GPU**: 0.0h
+- **Jobs**: 7 total (4 completed, 3 failed)
+
+<details>
+<summary>Progress Log</summary>
+
+### [2026-05-28 23:09] - none
+- Started from a partial workspace and analyzed the arXiv source bundle for AlignMerge.
+- Identified the core claim: Fisher-geometric merging with an alignment subspace penalty and AQI budget preserves alignment better than ordinary checkpoint averaging while retaining utility.
+
+### [2026-05-28 23:24] - method_runs
+- Implemented a compact AlignMerge reproduction on a synthetic multitask neural model.
+- Verified that the method trains anchors/experts, estimates task and alignment Fisher sketches, optimizes the AlignMerge objective, and writes checkpoints plus metrics.
+
+### [2026-05-28 23:35] - core_claim
+- Reproduced the core claim on `synthetic_alignment_merge`: AlignMerge improves over naive averaging on AQI, alignment accuracy, task accuracy, and unsafe probability.
+- Added ablations for removing the alignment-subspace penalty and removing the AQI budget term.
+- Independent evaluator reads saved checkpoints and recomputes metrics without importing method code; `python validate.py --compare` passes.
+
+### [2026-05-28 23:37] - core_claim
+- Continuing-agent audit restored `core_claim`: the method code implements Fisher-geodesic merging, alignment-Fisher subspace penalties, and an AQI soft budget rather than a surrogate.
+- Fixed baseline packaging so `baseline/` no longer imports from `method/`, and `scripts/baseline.sh` now scores via `scripts/evaluate.sh`.
+- Fixed evaluator independence for geometric diagnostics: `alignment_subspace_drift` and `fisher_geodesic_loss` are recomputed from saved checkpoints instead of copied from method metrics.
+- Local static/schema validation passes; a CPU container job is being submitted to verify the PyTorch code paths after the audit fixes.
+
+### [2026-05-28 23:40] - core_claim
+- Job `7422111a-da8` passed in the container with exit code 0.
+- `scripts/reproduce.sh`, `python validate.py --compare`, and `scripts/baseline.sh` all completed successfully after the audit fixes.
+- The independently recomputed geometry diagnostics still support the core claim: the no-alignment ablation has substantially higher alignment-subspace drift and lower alignment accuracy than full AlignMerge.
+
+### [2026-05-29 00:10] - core_claim
+- Final verification confirmed that `python validate.py --compare` passes and the existing container logs show dependencies and executable scripts completed successfully.
+- Tightened method-agnostic documentation in `briefing/` and `scoring/` so from-scratch agents see the problem and scoring rubric without the paper's solution recipe.
+- The remaining limitation is deliberate: the gym is a scaled synthetic reproduction because the paper bundle does not provide executable LLM code or non-placeholder headline tables.
 
 </details>
 
