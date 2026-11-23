@@ -1,8 +1,5 @@
 # Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends.
-action: submit
-gpus: 0
-test: true
-milestone: core_claim
-notes: "Red-team audit: runs redteam/run_all.sh (reference x5 seeds, weaker/better variants x3 seeds, brute force, shortcuts, checks; all CPU, ~10-15 min) and writes redteam/summary.md"
+action: done
+notes: "Red-team audit done. Weaker variants rank correctly but only one better variant scores higher, and only by dropping the task expert. The primary metric is already at its Bayes bound, and the safety anchor alone ties the reference. Shortcuts that pay: test-pool leak + anchor swap (14/14 metrics), easier data via the agent-writable data/ dir, forged scores_test.json + test crash, and dropping the source checkpoints to hide the geometry metrics. See REDTEAM.md."
