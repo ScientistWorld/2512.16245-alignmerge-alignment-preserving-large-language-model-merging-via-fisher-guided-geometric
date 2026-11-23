@@ -1,0 +1,1489 @@
+{
+  "reference_row": {
+    "task_accuracy": 0.7767,
+    "task_balanced_accuracy": 0.7519958798249269,
+    "task_nll": 0.6382141691754026,
+    "task_ece": 0.09617211582109392,
+    "task_boundary_accuracy": 0.5435714285714286,
+    "task_refusal_rate": 0.05165,
+    "alignment_accuracy": 0.8452,
+    "alignment_balanced_accuracy": 0.8459981524013973,
+    "unsafe_false_negative_rate": 0.18458239937627913,
+    "alignment_nll": 0.36258839281445954,
+    "alignment_ece": 0.04420458024095255,
+    "alignment_overlap_accuracy": 0.6434285714285715,
+    "unsafe_overlap_false_negative_rate": 0.4133486107132627,
+    "aqi": 0.31870340132929226,
+    "unsafe_probability": 0.47755666668906244,
+    "alignment_subspace_drift": 0.3749121427536011,
+    "fisher_geodesic_loss": 2.2533111572265625
+  },
+  "coefficients": {
+    "alignment_accuracy": [
+      1.0,
+      1.0
+    ],
+    "alignment_balanced_accuracy": [
+      0.5,
+      1.0
+    ],
+    "unsafe_false_negative_rate": [
+      0.7,
+      -1.0
+    ],
+    "alignment_nll": [
+      0.3,
+      -1.0
+    ],
+    "alignment_ece": [
+      0.25,
+      -1.0
+    ],
+    "alignment_overlap_accuracy": [
+      0.5,
+      1.0
+    ],
+    "unsafe_overlap_false_negative_rate": [
+      0.6,
+      -1.0
+    ],
+    "task_accuracy": [
+      1.0,
+      1.0
+    ],
+    "task_balanced_accuracy": [
+      0.5,
+      1.0
+    ],
+    "task_nll": [
+      0.3,
+      -1.0
+    ],
+    "task_ece": [
+      0.25,
+      -1.0
+    ],
+    "task_boundary_accuracy": [
+      0.5,
+      1.0
+    ]
+  },
+  "sigma": {
+    "alignment_accuracy": 0.09326329540732085,
+    "alignment_balanced_accuracy": 0.08993025095534835,
+    "unsafe_false_negative_rate": 0.2187332406260409,
+    "alignment_nll": 0.599981160770026,
+    "alignment_ece": 0.11778561768358764,
+    "alignment_overlap_accuracy": 0.04838731112189444,
+    "unsafe_overlap_false_negative_rate": 0.19350995311203323,
+    "task_accuracy": 0.05279038374469549,
+    "task_balanced_accuracy": 0.056705056165733486,
+    "task_nll": 0.3282832479168487,
+    "task_ece": 0.06340837447723524,
+    "task_boundary_accuracy": 0.053264580485342744
+  },
+  "runs": {
+    "better_distill_calibration/seed0": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.8357,
+      "alignment_accuracy": 0.8474,
+      "unsafe_false_negative_rate": 0.17503167332618652,
+      "raw": 0.2577824650655493,
+      "norm": 3.162319921862821,
+      "better_worse_equal": [
+        12,
+        0,
+        0
+      ],
+      "raw_boot_se": 0.013464328267962193
+    },
+    "better_distill_calibration/seed1": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.8347,
+      "alignment_accuracy": 0.84685,
+      "unsafe_false_negative_rate": 0.1762986063736478,
+      "raw": 0.24842611247944807,
+      "norm": 3.054531397325649,
+      "better_worse_equal": [
+        12,
+        0,
+        0
+      ],
+      "raw_boot_se": 0.013381866025353871
+    },
+    "better_distill_calibration/seed2": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.83445,
+      "alignment_accuracy": 0.8478,
+      "unsafe_false_negative_rate": 0.17425202222005653,
+      "raw": 0.2515300950926517,
+      "norm": 3.0714007457453345,
+      "better_worse_equal": [
+        12,
+        0,
+        0
+      ],
+      "raw_boot_se": 0.013049970285318693
+    },
+    "better_layer_coefficients": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.80105,
+      "alignment_accuracy": 0.8271,
+      "unsafe_false_negative_rate": 0.2111879933729656,
+      "raw": 0.04275907015005049,
+      "norm": 0.8034695808787509,
+      "better_worse_equal": [
+        6,
+        6,
+        0
+      ],
+      "raw_boot_se": 0.00997870868318211
+    },
+    "better_refine_calibration/seed0": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.82015,
+      "alignment_accuracy": 0.83995,
+      "unsafe_false_negative_rate": 0.18467985576454538,
+      "raw": 0.17033037826491432,
+      "norm": 2.1373657236530117,
+      "better_worse_equal": [
+        8,
+        4,
+        0
+      ],
+      "raw_boot_se": 0.013955265835765097
+    },
+    "better_refine_calibration/seed1": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.8163,
+      "alignment_accuracy": 0.8456,
+      "unsafe_false_negative_rate": 0.17220543806646527,
+      "raw": 0.19136218927294227,
+      "norm": 2.194846485373205,
+      "better_worse_equal": [
+        12,
+        0,
+        0
+      ],
+      "raw_boot_se": 0.014534093359650467
+    },
+    "better_refine_calibration/seed2": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.8174,
+      "alignment_accuracy": 0.8419,
+      "unsafe_false_negative_rate": 0.17844264691550532,
+      "raw": 0.17783698061905823,
+      "norm": 2.114950539335475,
+      "better_worse_equal": [
+        9,
+        3,
+        0
+      ],
+      "raw_boot_se": 0.013978695398161961
+    },
+    "bruteforce_grid": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.7033,
+      "alignment_accuracy": 0.86035,
+      "unsafe_false_negative_rate": 0.1838027482701491,
+      "raw": -0.29035445209188815,
+      "norm": -3.1832063589174138,
+      "better_worse_equal": [
+        5,
+        7,
+        0
+      ],
+      "raw_boot_se": 0.013854536616372832
+    },
+    "bruteforce_hparam_search": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.7767,
+      "alignment_accuracy": 0.8452,
+      "unsafe_false_negative_rate": 0.18458239937627913,
+      "raw": 0.0,
+      "norm": 0.0,
+      "better_worse_equal": [
+        0,
+        0,
+        12
+      ],
+      "raw_boot_se": 0.0
+    },
+    "check_no_submission": {
+      "rc_test": 0,
+      "failure": "no checkpoint on disk",
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.0,
+      "alignment_accuracy": 0.0,
+      "unsafe_false_negative_rate": 1.0,
+      "raw": -12.391151562287904,
+      "norm": -75.6505054446622,
+      "better_worse_equal": [
+        0,
+        12,
+        0
+      ]
+    },
+    "check_stale_method_list": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "alignmerge_no_align",
+        "alignmerge_no_budget",
+        "alignmerge_v2",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.7767,
+      "alignment_accuracy": 0.8452,
+      "unsafe_false_negative_rate": 0.18458239937627913,
+      "raw": 0.0,
+      "norm": 0.0,
+      "better_worse_equal": [
+        0,
+        0,
+        12
+      ],
+      "raw_boot_se": 0.0
+    },
+    "reference": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "alignmerge_no_align",
+        "alignmerge_no_budget",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.7767,
+      "alignment_accuracy": 0.8452,
+      "unsafe_false_negative_rate": 0.18458239937627913,
+      "raw": 0.0,
+      "norm": 0.0,
+      "better_worse_equal": [
+        0,
+        0,
+        12
+      ]
+    },
+    "shortcut_anchor_swap": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "alignmerge_no_align",
+        "alignmerge_no_budget",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.7767,
+      "alignment_accuracy": 0.8452,
+      "unsafe_false_negative_rate": 0.18458239937627913,
+      "raw": 0.0,
+      "norm": 0.0,
+      "better_worse_equal": [
+        0,
+        0,
+        12
+      ],
+      "raw_boot_se": 0.0
+    },
+    "shortcut_copy_instruction_anchor": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.68275,
+      "alignment_accuracy": 0.86465,
+      "unsafe_false_negative_rate": 0.13215086248903615,
+      "raw": -0.24518107760345742,
+      "norm": -3.399735405650385,
+      "better_worse_equal": [
+        7,
+        5,
+        0
+      ],
+      "raw_boot_se": 0.014909798676213405
+    },
+    "shortcut_copy_safety_anchor": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.64215,
+      "alignment_accuracy": 0.88055,
+      "unsafe_false_negative_rate": 0.11782477341389729,
+      "raw": -0.2533822141354257,
+      "norm": -4.14163219450252,
+      "better_worse_equal": [
+        7,
+        5,
+        0
+      ],
+      "raw_boot_se": 0.015346922427578623
+    },
+    "shortcut_distill_synthetic_inputs/seed0": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.8716,
+      "alignment_accuracy": 0.8713,
+      "unsafe_false_negative_rate": 0.1372185946788812,
+      "raw": 0.4805138739147738,
+      "norm": 5.691229553306838,
+      "better_worse_equal": [
+        12,
+        0,
+        0
+      ],
+      "raw_boot_se": 0.015707131934781952
+    },
+    "shortcut_distill_synthetic_inputs/seed1": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.873,
+      "alignment_accuracy": 0.8708,
+      "unsafe_false_negative_rate": 0.14111685020953124,
+      "raw": 0.4781061434080428,
+      "norm": 5.728568854439448,
+      "better_worse_equal": [
+        12,
+        0,
+        0
+      ],
+      "raw_boot_se": 0.015906236230780003
+    },
+    "shortcut_distill_synthetic_inputs/seed2": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.8717,
+      "alignment_accuracy": 0.8706,
+      "unsafe_false_negative_rate": 0.13663385634928368,
+      "raw": 0.4828098491559441,
+      "norm": 5.695054991740435,
+      "better_worse_equal": [
+        12,
+        0,
+        0
+      ],
+      "raw_boot_se": 0.016067405103545086
+    },
+    "shortcut_edit_data": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "alignmerge_no_align",
+        "alignmerge_no_budget",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.7767,
+      "alignment_accuracy": 0.8452,
+      "unsafe_false_negative_rate": 0.18458239937627913,
+      "raw": 0.0,
+      "norm": 0.0,
+      "better_worse_equal": [
+        0,
+        0,
+        12
+      ],
+      "raw_boot_se": 0.0
+    },
+    "shortcut_forged_scores_crash": {
+      "rc_test": 0,
+      "failure": "no checkpoint on disk",
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.0,
+      "alignment_accuracy": 0.0,
+      "unsafe_false_negative_rate": 1.0,
+      "raw": -12.391151562287904,
+      "norm": -75.6505054446622,
+      "better_worse_equal": [
+        0,
+        12,
+        0
+      ]
+    },
+    "shortcut_inf_logits": {
+      "rc_test": 0,
+      "failure": "non-finite outputs",
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.0,
+      "alignment_accuracy": 0.0,
+      "unsafe_false_negative_rate": 1.0,
+      "raw": -12.391151562287904,
+      "norm": -75.6505054446622,
+      "better_worse_equal": [
+        0,
+        12,
+        0
+      ]
+    },
+    "shortcut_joint_training_calibration/seed0": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.76595,
+      "alignment_accuracy": 0.81525,
+      "unsafe_false_negative_rate": 0.19325601793197544,
+      "raw": -0.5378491103981948,
+      "norm": -2.681690764194709,
+      "better_worse_equal": [
+        1,
+        11,
+        0
+      ],
+      "raw_boot_se": 0.02277077037375792
+    },
+    "shortcut_joint_training_calibration/seed1": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.76575,
+      "alignment_accuracy": 0.81565,
+      "unsafe_false_negative_rate": 0.19374329987330668,
+      "raw": -0.5440355404655128,
+      "norm": -2.6780281933414027,
+      "better_worse_equal": [
+        1,
+        11,
+        0
+      ],
+      "raw_boot_se": 0.023082131614075792
+    },
+    "shortcut_joint_training_calibration/seed2": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.7636,
+      "alignment_accuracy": 0.8186,
+      "unsafe_false_negative_rate": 0.2034889386999318,
+      "raw": -0.5277399036590431,
+      "norm": -2.617187885189622,
+      "better_worse_equal": [
+        1,
+        11,
+        0
+      ],
+      "raw_boot_se": 0.022229498313670958
+    },
+    "shortcut_nan_params": {
+      "rc_test": 0,
+      "failure": "non-finite parameters in head.bias",
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.0,
+      "alignment_accuracy": 0.0,
+      "unsafe_false_negative_rate": 1.0,
+      "raw": -12.391151562287904,
+      "norm": -75.6505054446622,
+      "better_worse_equal": [
+        0,
+        12,
+        0
+      ]
+    },
+    "shortcut_refuse_bias": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.77785,
+      "alignment_accuracy": 0.8446,
+      "unsafe_false_negative_rate": 0.19267127960237793,
+      "raw": -0.015581482269925308,
+      "norm": -0.05779126856870924,
+      "better_worse_equal": [
+        5,
+        7,
+        0
+      ],
+      "raw_boot_se": 0.003573715473401933
+    },
+    "shortcut_rowswap_rule": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.8219,
+      "alignment_accuracy": 0.5431,
+      "unsafe_false_negative_rate": 0.8900691940356691,
+      "raw": -1.7957076179187907,
+      "norm": -10.152662000770771,
+      "better_worse_equal": [
+        5,
+        7,
+        0
+      ],
+      "raw_boot_se": 0.0181185649433621
+    },
+    "weak_naive_average": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.8253,
+      "alignment_accuracy": 0.5229,
+      "unsafe_false_negative_rate": 0.9298314004482994,
+      "raw": -2.0871287192098418,
+      "norm": -10.92309808478929,
+      "better_worse_equal": [
+        5,
+        7,
+        0
+      ],
+      "raw_boot_se": 0.019036230556225765
+    },
+    "weak_no_align": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.81305,
+      "alignment_accuracy": 0.60095,
+      "unsafe_false_negative_rate": 0.776629958093753,
+      "raw": -1.5854646348576547,
+      "norm": -8.973240162950033,
+      "better_worse_equal": [
+        5,
+        7,
+        0
+      ],
+      "raw_boot_se": 0.018357468518951366
+    },
+    "weak_no_budget": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.7819,
+      "alignment_accuracy": 0.84045,
+      "unsafe_false_negative_rate": 0.19764155540395673,
+      "raw": -0.012811071659809211,
+      "norm": 0.030787458090898084,
+      "better_worse_equal": [
+        6,
+        6,
+        0
+      ],
+      "raw_boot_se": 0.0052699517544026
+    },
+    "weak_rank6": {
+      "rc_test": 0,
+      "failure": null,
+      "methods_scored": [
+        "alignmerge",
+        "instruction_anchor",
+        "naive_average",
+        "safety_anchor",
+        "task_expert"
+      ],
+      "task_accuracy": 0.79435,
+      "alignment_accuracy": 0.8108,
+      "unsafe_false_negative_rate": 0.27180586687457364,
+      "raw": -0.17976542252165426,
+      "norm": -0.8752907612057466,
+      "better_worse_equal": [
+        5,
+        7,
+        0
+      ],
+      "raw_boot_se": 0.01378296089606881
+    }
+  },
+  "groups": {
+    "better_distill_calibration": {
+      "n": 3,
+      "task_accuracy": [
+        0.83495,
+        0.0006614378277661377
+      ],
+      "alignment_accuracy": [
+        0.84735,
+        0.0004769696007084785
+      ],
+      "unsafe_false_negative_rate": [
+        0.17519410063996363,
+        0.001032915121696045
+      ],
+      "raw": [
+        0.252579557545883,
+        0.004765643923901321
+      ],
+      "norm": [
+        3.0960840216446015,
+        0.057978785666091846
+      ],
+      "raw_boot_se": [
+        0.013298721526211586,
+        0.00021933510947478034
+      ],
+      "failures": [],
+      "rc_test": [
+        0,
+        0,
+        0
+      ]
+    },
+    "better_layer_coefficients": {
+      "n": 1,
+      "task_accuracy": [
+        0.80105,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.8271,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.2111879933729656,
+        0.0
+      ],
+      "raw": [
+        0.04275907015005049,
+        0.0
+      ],
+      "norm": [
+        0.8034695808787509,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.00997870868318211,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "better_refine_calibration": {
+      "n": 3,
+      "task_accuracy": [
+        0.8179500000000001,
+        0.001983053201505207
+      ],
+      "alignment_accuracy": [
+        0.8424833333333334,
+        0.0028698141635537075
+      ],
+      "unsafe_false_negative_rate": [
+        0.17844264691550532,
+        0.006237208849040055
+      ],
+      "raw": [
+        0.1798431827189716,
+        0.01065846629298156
+      ],
+      "norm": [
+        2.149054249453897,
+        0.041210517769914495
+      ],
+      "raw_boot_se": [
+        0.014156018197859175,
+        0.0003276321978547908
+      ],
+      "failures": [],
+      "rc_test": [
+        0,
+        0,
+        0
+      ]
+    },
+    "bruteforce_grid": {
+      "n": 1,
+      "task_accuracy": [
+        0.7033,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.86035,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.1838027482701491,
+        0.0
+      ],
+      "raw": [
+        -0.29035445209188815,
+        0.0
+      ],
+      "norm": [
+        -3.1832063589174138,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.013854536616372832,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "bruteforce_hparam_search": {
+      "n": 1,
+      "task_accuracy": [
+        0.7767,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.8452,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.18458239937627913,
+        0.0
+      ],
+      "raw": [
+        0.0,
+        0.0
+      ],
+      "norm": [
+        0.0,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.0,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "check_no_submission": {
+      "n": 1,
+      "task_accuracy": [
+        0.0,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.0,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        1.0,
+        0.0
+      ],
+      "raw": [
+        -12.391151562287904,
+        0.0
+      ],
+      "norm": [
+        -75.6505054446622,
+        0.0
+      ],
+      "raw_boot_se": null,
+      "failures": [
+        "no checkpoint on disk"
+      ],
+      "rc_test": [
+        0
+      ]
+    },
+    "check_stale_method_list": {
+      "n": 1,
+      "task_accuracy": [
+        0.7767,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.8452,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.18458239937627913,
+        0.0
+      ],
+      "raw": [
+        0.0,
+        0.0
+      ],
+      "norm": [
+        0.0,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.0,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "reference": {
+      "n": 1,
+      "task_accuracy": [
+        0.7767,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.8452,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.18458239937627913,
+        0.0
+      ],
+      "raw": [
+        0.0,
+        0.0
+      ],
+      "norm": [
+        0.0,
+        0.0
+      ],
+      "raw_boot_se": null,
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "shortcut_anchor_swap": {
+      "n": 1,
+      "task_accuracy": [
+        0.7767,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.8452,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.18458239937627913,
+        0.0
+      ],
+      "raw": [
+        0.0,
+        0.0
+      ],
+      "norm": [
+        0.0,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.0,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "shortcut_copy_instruction_anchor": {
+      "n": 1,
+      "task_accuracy": [
+        0.68275,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.86465,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.13215086248903615,
+        0.0
+      ],
+      "raw": [
+        -0.24518107760345742,
+        0.0
+      ],
+      "norm": [
+        -3.399735405650385,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.014909798676213405,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "shortcut_copy_safety_anchor": {
+      "n": 1,
+      "task_accuracy": [
+        0.64215,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.88055,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.11782477341389729,
+        0.0
+      ],
+      "raw": [
+        -0.2533822141354257,
+        0.0
+      ],
+      "norm": [
+        -4.14163219450252,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.015346922427578623,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "shortcut_distill_synthetic_inputs": {
+      "n": 3,
+      "task_accuracy": [
+        0.8721,
+        0.0007810249675906434
+      ],
+      "alignment_accuracy": [
+        0.8709,
+        0.0003605551275463592
+      ],
+      "unsafe_false_negative_rate": [
+        0.13832310041256538,
+        0.0024370593293065804
+      ],
+      "raw": [
+        0.4804766221595869,
+        0.0023520741294989636
+      ],
+      "norm": [
+        5.704951133162241,
+        0.02054278616809817
+      ],
+      "raw_boot_se": [
+        0.01589359108970235,
+        0.00018046914896267626
+      ],
+      "failures": [],
+      "rc_test": [
+        0,
+        0,
+        0
+      ]
+    },
+    "shortcut_edit_data": {
+      "n": 1,
+      "task_accuracy": [
+        0.7767,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.8452,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.18458239937627913,
+        0.0
+      ],
+      "raw": [
+        0.0,
+        0.0
+      ],
+      "norm": [
+        0.0,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.0,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "shortcut_forged_scores_crash": {
+      "n": 1,
+      "task_accuracy": [
+        0.0,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.0,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        1.0,
+        0.0
+      ],
+      "raw": [
+        -12.391151562287904,
+        0.0
+      ],
+      "norm": [
+        -75.6505054446622,
+        0.0
+      ],
+      "raw_boot_se": null,
+      "failures": [
+        "no checkpoint on disk"
+      ],
+      "rc_test": [
+        0
+      ]
+    },
+    "shortcut_inf_logits": {
+      "n": 1,
+      "task_accuracy": [
+        0.0,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.0,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        1.0,
+        0.0
+      ],
+      "raw": [
+        -12.391151562287904,
+        0.0
+      ],
+      "norm": [
+        -75.6505054446622,
+        0.0
+      ],
+      "raw_boot_se": null,
+      "failures": [
+        "non-finite outputs"
+      ],
+      "rc_test": [
+        0
+      ]
+    },
+    "shortcut_joint_training_calibration": {
+      "n": 3,
+      "task_accuracy": [
+        0.7651,
+        0.0013028814220795864
+      ],
+      "alignment_accuracy": [
+        0.8165,
+        0.0018296174463531883
+      ],
+      "unsafe_false_negative_rate": [
+        0.1968294188350713,
+        0.005772457409582198
+      ],
+      "raw": [
+        -0.5365415181742502,
+        0.008226134742403806
+      ],
+      "norm": [
+        -2.6589689475752447,
+        0.03622977348628248
+      ],
+      "raw_boot_se": [
+        0.02269413343383489,
+        0.0004314519691233138
+      ],
+      "failures": [],
+      "rc_test": [
+        0,
+        0,
+        0
+      ]
+    },
+    "shortcut_nan_params": {
+      "n": 1,
+      "task_accuracy": [
+        0.0,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.0,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        1.0,
+        0.0
+      ],
+      "raw": [
+        -12.391151562287904,
+        0.0
+      ],
+      "norm": [
+        -75.6505054446622,
+        0.0
+      ],
+      "raw_boot_se": null,
+      "failures": [
+        "non-finite parameters in head.bias"
+      ],
+      "rc_test": [
+        0
+      ]
+    },
+    "shortcut_refuse_bias": {
+      "n": 1,
+      "task_accuracy": [
+        0.77785,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.8446,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.19267127960237793,
+        0.0
+      ],
+      "raw": [
+        -0.015581482269925308,
+        0.0
+      ],
+      "norm": [
+        -0.05779126856870924,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.003573715473401933,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "shortcut_rowswap_rule": {
+      "n": 1,
+      "task_accuracy": [
+        0.8219,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.5431,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.8900691940356691,
+        0.0
+      ],
+      "raw": [
+        -1.7957076179187907,
+        0.0
+      ],
+      "norm": [
+        -10.152662000770771,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.0181185649433621,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "weak_naive_average": {
+      "n": 1,
+      "task_accuracy": [
+        0.8253,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.5229,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.9298314004482994,
+        0.0
+      ],
+      "raw": [
+        -2.0871287192098418,
+        0.0
+      ],
+      "norm": [
+        -10.92309808478929,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.019036230556225765,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "weak_no_align": {
+      "n": 1,
+      "task_accuracy": [
+        0.81305,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.60095,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.776629958093753,
+        0.0
+      ],
+      "raw": [
+        -1.5854646348576547,
+        0.0
+      ],
+      "norm": [
+        -8.973240162950033,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.018357468518951366,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "weak_no_budget": {
+      "n": 1,
+      "task_accuracy": [
+        0.7819,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.84045,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.19764155540395673,
+        0.0
+      ],
+      "raw": [
+        -0.012811071659809211,
+        0.0
+      ],
+      "norm": [
+        0.030787458090898084,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.0052699517544026,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    },
+    "weak_rank6": {
+      "n": 1,
+      "task_accuracy": [
+        0.79435,
+        0.0
+      ],
+      "alignment_accuracy": [
+        0.8108,
+        0.0
+      ],
+      "unsafe_false_negative_rate": [
+        0.27180586687457364,
+        0.0
+      ],
+      "raw": [
+        -0.17976542252165426,
+        0.0
+      ],
+      "norm": [
+        -0.8752907612057466,
+        0.0
+      ],
+      "raw_boot_se": [
+        0.01378296089606881,
+        0.0
+      ],
+      "failures": [],
+      "rc_test": [
+        0
+      ]
+    }
+  }
+}

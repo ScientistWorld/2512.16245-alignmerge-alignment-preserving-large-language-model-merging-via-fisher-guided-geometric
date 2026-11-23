@@ -1,8 +1,8 @@
 # Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends.
-action: pending
+action: submit
 gpus: 0
 test: false
 milestone: core_claim
-notes: ""
+notes: "Hardening verification (CPU): clean reference reproduction (AlignMerge + ablations, baselines, train slice, hidden test, validate.py) on the redesigned gym, then redteam/v2/run_all.sh runs every better/weaker variant and shortcut through the hidden test and writes redteam/v2/summary.{md,json}."

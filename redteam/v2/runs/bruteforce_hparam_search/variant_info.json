@@ -1,0 +1,9 @@
+{
+  "variant": "hparam_search",
+  "seed": 0,
+  "hparam_choice": {
+    "rank": 32,
+    "lambda_align": 12.0,
+    "gamma": 1.0
+  }
+}

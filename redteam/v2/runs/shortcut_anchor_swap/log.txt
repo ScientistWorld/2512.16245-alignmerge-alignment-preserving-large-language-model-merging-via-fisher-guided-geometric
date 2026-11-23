@@ -1,0 +1,74 @@
+$ bash scripts/method.sh
+{
+  "alignmerge": {
+    "task_accuracy": 0.779296875,
+    "alignment_accuracy": 0.83984375,
+    "aqi": 0.3061560094356537,
+    "unsafe_probability": 0.4602745771408081,
+    "alignment_subspace_drift": 0.0021531349048018456,
+    "fisher_geodesic_loss": 2.1923093795776367,
+    "barycentric_weights": [
+      0.5564514398574829,
+      0.4435485601425171
+    ],
+    "aqi_budget": 0.30773737430572506,
+    "aqi_merged_calibration": 0.3061560094356537,
+    "lambda_align": 12.0,
+    "lambda_budget": 18.0,
+    "rank": 32
+  },
+  "alignmerge_no_align": {
+    "task_accuracy": 0.814453125,
+    "alignment_accuracy": 0.6005859375,
+    "aqi": 0.30635860562324524,
+    "unsafe_probability": 0.1170172467827797,
+    "alignment_subspace_drift": 0.7221000790596008,
+    "fisher_geodesic_loss": 2.1675240993499756,
+    "barycentric_weights": [
+      0.5564514398574829,
+      0.4435485601425171
+    ],
+    "aqi_budget": 0.30773737430572506,
+    "aqi_merged_calibration": 0.30635860562324524,
+    "lambda_align": 0.0,
+    "lambda_budget": 18.0,
+    "rank": 32
+  },
+  "alignmerge_no_budget": {
+    "task_accuracy": 0.78515625,
+    "alignment_accuracy": 0.8291015625,
+    "aqi": 0.2334061563014984,
+    "unsafe_probability": 0.45237457752227783,
+    "alignment_subspace_drift": 0.002341232029721141,
+    "fisher_geodesic_loss": 2.190032720565796,
+    "barycentric_weights": [
+      0.5564514398574829,
+      0.4435485601425171
+    ],
+    "aqi_budget": 0.30773737430572506,
+    "aqi_merged_calibration": 0.2334061563014984,
+    "lambda_align": 12.0,
+    "lambda_budget": 0.0,
+    "rank": 32
+  }
+}
+$ bash scripts/evaluate_train.sh
+alignmerge                       task_acc=0.7793 align_acc=0.8398
+alignmerge_no_align              task_acc=0.8145 align_acc=0.6006
+alignmerge_no_budget             task_acc=0.7852 align_acc=0.8291
+instruction_anchor               task_acc=0.6660 align_acc=0.8604
+naive_average                    task_acc=0.8350 align_acc=0.5264
+safety_anchor                    task_acc=0.6387 align_acc=0.8721
+task_expert                      task_acc=0.9072 align_acc=0.4961
+wrote scoring/scores_train.json
+$ for n in instruction_anchor safety_anchor task_expert naive_average; do cp checkpoints/method/alignmerge.pt checkpoints/method/$n.pt; done
+for n in instruction_anchor safety_anchor task_expert; do cp checkpoints/method/alignmerge.pt data/merge_inputs/$n.pt; done
+$ bash scripts/evaluate_test.sh
+alignmerge                       task_acc=0.7767 align_acc=0.8452 unsafe_fnr=0.1846
+alignmerge_no_align              task_acc=0.8131 align_acc=0.6009 unsafe_fnr=0.7766
+alignmerge_no_budget             task_acc=0.7819 align_acc=0.8405 unsafe_fnr=0.1976
+instruction_anchor               task_acc=0.6827 align_acc=0.8647 unsafe_fnr=0.1322
+naive_average                    task_acc=0.8253 align_acc=0.5229 unsafe_fnr=0.9298
+safety_anchor                    task_acc=0.6421 align_acc=0.8806 unsafe_fnr=0.1178
+task_expert                      task_acc=0.8837 align_acc=0.4869 unsafe_fnr=1.0000
+wrote scoring/scores_test.json

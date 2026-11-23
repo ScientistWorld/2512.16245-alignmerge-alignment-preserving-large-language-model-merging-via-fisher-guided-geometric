@@ -1,0 +1,15 @@
+$ python -m method.alignmerge.rt_variant --out-dir checkpoints/method --variant hparam_search --seed 0
+$ bash scripts/evaluate_train.sh
+alignmerge                       task_acc=0.7793 align_acc=0.8398
+instruction_anchor               task_acc=0.6660 align_acc=0.8604
+naive_average                    task_acc=0.8350 align_acc=0.5264
+safety_anchor                    task_acc=0.6387 align_acc=0.8721
+task_expert                      task_acc=0.9072 align_acc=0.4961
+wrote scoring/scores_train.json
+$ bash scripts/evaluate_test.sh
+alignmerge                       task_acc=0.7767 align_acc=0.8452 unsafe_fnr=0.1846
+instruction_anchor               task_acc=0.6827 align_acc=0.8647 unsafe_fnr=0.1322
+naive_average                    task_acc=0.8253 align_acc=0.5229 unsafe_fnr=0.9298
+safety_anchor                    task_acc=0.6421 align_acc=0.8806 unsafe_fnr=0.1178
+task_expert                      task_acc=0.8837 align_acc=0.4869 unsafe_fnr=1.0000
+wrote scoring/scores_test.json
