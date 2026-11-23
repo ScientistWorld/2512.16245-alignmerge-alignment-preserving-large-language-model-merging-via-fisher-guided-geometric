@@ -1,6 +1,10 @@
 # Overview
 
-AlignMerge addresses the failure mode where weight-space model merging preserves utility but erodes alignment. It adds explicit Fisher-geometry and AQI-budget constraints to the merge so the result remains close to useful experts without moving far along safety-sensitive directions.
+AlignMerge addresses a failure of weight-space model merging: it keeps utility but erodes alignment. A merge that
+pulls in a task expert's update also pulls in the expert's forgotten refusals. AlignMerge adds Fisher-geometry
+and alignment-budget terms to the merge objective. The merged model stays close to the useful experts in the task
+geometry without moving along alignment-sensitive directions.
 
-The reproduction package implements the method on a small synthetic multitask neural model, with reusable scripts for running the merge and evaluating the resulting artifacts.
-
+The gym reproduces this on a small synthetic model family. Three frozen source checkpoints (instruction anchor,
+safety anchor, task expert) and a small labelled calibration set are given. A merged checkpoint is scored on a
+hidden test set for both refusal behaviour on unsafe prompts and task utility.

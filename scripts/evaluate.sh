@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
+# Standard evaluator: same as the train-slice evaluator, written to scoring/scores.json (or $2).
 set -euo pipefail
 cd "$(dirname "$0")/.."
-INPUT="${1:-checkpoints/method/metrics.json}"
+ROOT_DIR="${1:-checkpoints}"
 OUTPUT="${2:-scoring/scores.json}"
-python -m eval.evaluate_outputs --input "$INPUT" --output "$OUTPUT"
-
+python -m eval.train.evaluate --checkpoint-root "$ROOT_DIR" --output "$OUTPUT"

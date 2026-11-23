@@ -1,23 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# Hidden test. Run with no arguments: scores every checkpoint under checkpoints/ (plus the fixed baselines and the
+# expected submission) on the hidden test set and writes scoring/scores_test.json. Optional $1: checkpoint root.
+set -uo pipefail
 cd "$(dirname "$0")/.."
-SOURCE="${1:-checkpoints}"
-OUTPUT="${2:-scoring/scores_test.json}"
-
-if [[ -d "$SOURCE" ]]; then
-  if [[ -f "$SOURCE/method/metrics.json" ]]; then
-    INPUT="$SOURCE/method/metrics.json"
-    CHECKPOINT_DIR="$SOURCE/method"
-  elif [[ -f "$SOURCE/metrics.json" ]]; then
-    INPUT="$SOURCE/metrics.json"
-    CHECKPOINT_DIR="$SOURCE"
-  else
-    echo "Could not find metrics.json under checkpoint source: $SOURCE" >&2
-    exit 1
-  fi
-else
-  INPUT="$SOURCE"
-  CHECKPOINT_DIR="$(dirname "$INPUT")"
-fi
-
-python -m eval.test.evaluate --input "$INPUT" --checkpoint-dir "$CHECKPOINT_DIR" --output "$OUTPUT" --train-scores scoring/scores_train.json
+ROOT_DIR="${1:-checkpoints}"
+rm -f scoring/scores_test.json
+python -m eval.test.evaluate --checkpoint-root "$ROOT_DIR" --output scoring/scores_test.json

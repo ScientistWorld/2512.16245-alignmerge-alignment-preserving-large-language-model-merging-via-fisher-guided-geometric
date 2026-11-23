@@ -1,279 +1,300 @@
+"""Hidden test evaluator for the AlignMerge gym.
+
+Self-contained by design. It never imports data/ or method/, never reads metrics.json or scoring/scores_train.json,
+and never trusts a number a method wrote. Every scored value is recomputed from the checkpoint weights on the
+hidden test set in eval/test/assets/test_set.pt.
+
+- Methods scored: every ``*.pt`` file under ``checkpoints/`` (recursively; the name is the file stem), plus the
+  expected submission name(s). A missing, unreadable, malformed or non-finite checkpoint, or one whose outputs are
+  non-finite, is a failed run and gets the worst value of every scored metric.
+- Fixed baselines (``instruction_anchor``, ``safety_anchor``, ``task_expert``, ``naive_average``) are always built
+  from eval's own frozen copies of the sources. Files on disk with those names are ignored.
+- Output: ``scoring/scores_test.json`` (deleted first, always rewritten, even when every method fails).
+"""
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
+import sys
+import traceback
 from pathlib import Path
 
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
+from torch.func import functional_call, grad, vmap
 
-from data.benchmark import TinyMultiTaskNet, aqi_from_features, mean_unsafe_probability
-from data.synthetic_alignment import load_synthetic_splits
-
-
+ROOT = Path(__file__).resolve().parents[2]
+ASSETS = Path(__file__).resolve().parent / "assets"
 EXPERIMENT = "synthetic_alignment_merge"
-SLICE = "test"
-TRAIN_SPLIT_SEED = 7319
-TEST_SPLIT_SEED = 9043
-SLICE_FRACTION = 0.45
-STRESS_FRACTION = 0.35
+D_IN, HIDDEN, N_TASK = 16, 48, 4
+REFUSE = N_TASK
+SOURCE_NAMES = ("instruction_anchor", "safety_anchor", "task_expert")
+FIXED_BASELINES = SOURCE_NAMES + ("naive_average",)
+EXPECTED_SUBMISSIONS = ("alignmerge",)
+NLL_CAP = -math.log(1e-6)
+ECE_BINS = 15
+GEOMETRY_RANK = 32
+GEOMETRY_EXAMPLES = 2048
+
+# Scored metrics and their worst values (a failed run receives these).
+WORST = {
+    "alignment_accuracy": 0.0,
+    "alignment_balanced_accuracy": 0.0,
+    "unsafe_false_negative_rate": 1.0,
+    "alignment_nll": NLL_CAP,
+    "alignment_ece": 1.0,
+    "alignment_overlap_accuracy": 0.0,
+    "unsafe_overlap_false_negative_rate": 1.0,
+    "task_accuracy": 0.0,
+    "task_balanced_accuracy": 0.0,
+    "task_nll": NLL_CAP,
+    "task_ece": 1.0,
+    "task_boundary_accuracy": 0.0,
+}
 
 
-def load_model(path: Path) -> TinyMultiTaskNet:
-    model = TinyMultiTaskNet()
-    model.load_state_dict(torch.load(path, map_location="cpu"))
+class Net(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.backbone = nn.Sequential(nn.Linear(D_IN, HIDDEN), nn.Tanh(), nn.Linear(HIDDEN, HIDDEN), nn.Tanh())
+        self.head = nn.Linear(HIDDEN, N_TASK + 1)
+
+    def forward(self, x):
+        return self.head(self.backbone(x))
+
+
+EXPECTED_SHAPES = {k: tuple(v.shape) for k, v in Net().state_dict().items()}
+
+
+class FailedRun(Exception):
+    pass
+
+
+def load_checkpoint(path: Path) -> Net:
+    try:
+        obj = torch.load(path, map_location="cpu", weights_only=True)
+    except Exception as exc:  # unreadable / not a plain tensor dict
+        raise FailedRun(f"unreadable checkpoint: {type(exc).__name__}") from None
+    if not isinstance(obj, dict) or set(obj.keys()) != set(EXPECTED_SHAPES):
+        raise FailedRun("state dict keys do not match the model family")
+    state = {}
+    for key, shape in EXPECTED_SHAPES.items():
+        t = obj[key]
+        if not isinstance(t, torch.Tensor) or tuple(t.shape) != shape or not t.is_floating_point():
+            raise FailedRun(f"bad tensor for {key}")
+        t = t.detach().to(torch.float32)
+        if not torch.isfinite(t).all():
+            raise FailedRun(f"non-finite parameters in {key}")
+        state[key] = t
+    model = Net()
+    model.load_state_dict(state)
     model.eval()
     return model
 
 
-def parameters_to_vector(model: TinyMultiTaskNet) -> torch.Tensor:
-    return torch.nn.utils.parameters_to_vector([p.detach() for p in model.parameters()])
+def parameters_to_vector(model: Net) -> torch.Tensor:
+    return torch.cat([p.detach().reshape(-1) for p in model.parameters()])
 
 
-def grad_vector(model: TinyMultiTaskNet, loss: torch.Tensor) -> torch.Tensor:
-    params = list(model.parameters())
-    grads = torch.autograd.grad(loss, params, retain_graph=False, create_graph=False, allow_unused=True)
-    flat = []
-    for param, grad in zip(params, grads):
-        flat.append(torch.zeros_like(param).flatten() if grad is None else grad.detach().flatten())
-    return torch.cat(flat)
+def capped_nll(logits: torch.Tensor, labels: torch.Tensor) -> float:
+    nll = -F.log_softmax(logits.double(), dim=1).gather(1, labels.view(-1, 1)).squeeze(1)
+    return nll.clamp(max=NLL_CAP).mean().item()
 
 
-def estimate_fisher(
-    model: TinyMultiTaskNet,
-    x: torch.Tensor,
-    y: torch.Tensor,
-    head: str,
-    batches: int = 24,
-    batch: int = 64,
-    seed: int = 1009,
-):
-    grads = []
-    n = len(x)
-    gen = torch.Generator().manual_seed(seed)
-    for _ in range(batches):
-        idx = torch.randint(0, n, (batch,), generator=gen)
-        loss = F.cross_entropy(model(x[idx], head), y[idx])
-        grads.append(grad_vector(model, loss))
-    g = torch.stack(grads)
-    diag = g.pow(2).mean(dim=0) + 1e-5
-    centered = g - g.mean(dim=0, keepdim=True)
-    return diag, centered
-
-
-def top_alignment_subspace(gradient_sketch: torch.Tensor, rank: int = 6):
-    _, s, vh = torch.linalg.svd(gradient_sketch, full_matrices=False)
-    u = vh[:rank].T.contiguous()
-    eig = (s[:rank].pow(2) / max(1, gradient_sketch.shape[0] - 1)).contiguous() + 1e-6
-    return u, eig
-
-
-def recompute_geometry(
-    models: dict[str, TinyMultiTaskNet],
-    x_task: torch.Tensor,
-    y_task: torch.Tensor,
-    x_align: torch.Tensor,
-    y_align: torch.Tensor,
-) -> dict[str, dict[str, float]]:
-    required = {"instruction_anchor", "safety_anchor", "task_expert"}
-    if not required.issubset(models):
-        return {}
-    anchor = models["instruction_anchor"]
-    theta_it = parameters_to_vector(anchor)
-    expert_vecs = torch.stack([parameters_to_vector(models["safety_anchor"]), parameters_to_vector(models["task_expert"])])
-    deltas = expert_vecs - theta_it
-    task_fisher, _ = estimate_fisher(anchor, x_task, y_task, "task", seed=2027)
-    _, align_sketch = estimate_fisher(anchor, x_align, y_align, "align", seed=2028)
-    u_align, _ = top_alignment_subspace(align_sketch, rank=6)
-    barycenter = (torch.tensor([0.48, 0.52])[:, None] * deltas).sum(dim=0)
-
-    diagnostics = {}
-    for name, model in models.items():
-        delta = parameters_to_vector(model) - theta_it
-        diagnostics[name] = {
-            "alignment_subspace_drift": torch.linalg.norm(delta @ u_align).item(),
-            "fisher_geodesic_loss": (task_fisher * (delta - barycenter).pow(2)).sum().item(),
-        }
-    return diagnostics
-
-
-def slice_tensor_pair(x: torch.Tensor, y: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-    count = int(len(x) * SLICE_FRACTION)
-    train_gen = torch.Generator().manual_seed(TRAIN_SPLIT_SEED)
-    train_idx = torch.randperm(len(x), generator=train_gen)[:count]
-    eligible = torch.ones(len(x), dtype=torch.bool)
-    eligible[train_idx] = False
-    remaining = eligible.nonzero(as_tuple=False).flatten()
-    test_gen = torch.Generator().manual_seed(TEST_SPLIT_SEED)
-    idx = remaining[torch.randperm(len(remaining), generator=test_gen)[:count]]
-    return x[idx], y[idx]
-
-
-def accuracy(logits: torch.Tensor, labels: torch.Tensor) -> float:
-    return (logits.argmax(dim=1) == labels).float().mean().item()
-
-
-def balanced_accuracy(logits: torch.Tensor, labels: torch.Tensor) -> float:
-    pred = logits.argmax(dim=1)
-    recalls = []
-    for label in sorted(labels.unique().tolist()):
-        mask = labels == int(label)
+def ece(logits: torch.Tensor, labels: torch.Tensor) -> float:
+    probs = F.softmax(logits.double(), dim=1)
+    conf, pred = probs.max(dim=1)
+    correct = (pred == labels).double()
+    total = 0.0
+    edges = torch.linspace(0.0, 1.0, ECE_BINS + 1, dtype=torch.float64)
+    for i in range(ECE_BINS):
+        lo, hi = edges[i], edges[i + 1]
+        mask = (conf > lo) & (conf <= hi) if i > 0 else (conf >= lo) & (conf <= hi)
         if mask.any():
-            recalls.append((pred[mask] == labels[mask]).float().mean())
-    return torch.stack(recalls).mean().item()
+            total += mask.double().mean().item() * abs(conf[mask].mean().item() - correct[mask].mean().item())
+    return total
 
 
-def unsafe_false_negative_rate(logits: torch.Tensor, labels: torch.Tensor) -> float:
-    pred = logits.argmax(dim=1)
-    unsafe = labels == 1
-    if not unsafe.any():
-        return 0.0
-    return (pred[unsafe] == 0).float().mean().item()
+def recall(pred: torch.Tensor, labels: torch.Tensor, cls: int) -> float:
+    mask = labels == cls
+    return (pred[mask] == cls).double().mean().item() if mask.any() else 0.0
 
 
-def negative_log_likelihood(logits: torch.Tensor, labels: torch.Tensor) -> float:
-    return F.cross_entropy(logits, labels).item()
+def aqi(features: torch.Tensor, labels: torch.Tensor) -> float:
+    safe, unsafe = features[labels == 0].double(), features[labels == 1].double()
+    c0, c1 = safe.mean(0), unsafe.mean(0)
+    within = ((safe - c0).pow(2).sum(1).mean() + (unsafe - c1).pow(2).sum(1).mean()) / 2.0
+    between = (c0 - c1).pow(2).sum()
+    xb = within / (between + 1e-6)
+    ch = between / (within + 1e-6)
+    return torch.sigmoid(0.75 * torch.log(ch + 1e-6) - 0.75 * torch.log(xb + 1e-6)).item()
 
 
-def expected_calibration_error(logits: torch.Tensor, labels: torch.Tensor, bins: int = 10) -> float:
-    probs = F.softmax(logits, dim=-1)
-    confidence, pred = probs.max(dim=1)
-    correct = pred == labels
-    ece = torch.tensor(0.0)
-    edges = torch.linspace(0.0, 1.0, bins + 1)
-    for low, high in zip(edges[:-1], edges[1:]):
-        if high == 1.0:
-            mask = (confidence >= low) & (confidence <= high)
-        else:
-            mask = (confidence >= low) & (confidence < high)
-        if mask.any():
-            ece += mask.float().mean() * (confidence[mask].mean() - correct[mask].float().mean()).abs()
-    return ece.item()
-
-
-def circular_distance(angle: torch.Tensor, boundary: float) -> torch.Tensor:
-    return torch.atan2(torch.sin(angle - boundary), torch.cos(angle - boundary)).abs()
-
-
-def task_boundary_indices(x: torch.Tensor) -> torch.Tensor:
-    radius = torch.linalg.norm(x, dim=1)
-    angle = torch.atan2(x[:, 1], x[:, 0])
-    angular = torch.minimum(circular_distance(angle, -torch.pi / 3), circular_distance(angle, 2 * torch.pi / 3))
-    radial = (radius - 1.45).abs()
-    difficulty = torch.minimum(angular / torch.pi, radial / 1.45)
-    count = max(1, int(len(x) * STRESS_FRACTION))
-    return torch.topk(difficulty, count, largest=False).indices
-
-
-def alignment_overlap_indices(x: torch.Tensor) -> torch.Tensor:
-    difficulty = x[:, 0].abs()
-    count = max(1, int(len(x) * STRESS_FRACTION))
-    return torch.topk(difficulty, count, largest=False).indices
-
-
-def evaluate_on_slice(model: TinyMultiTaskNet, splits) -> dict[str, float]:
-    x_task, y_task = slice_tensor_pair(splits.x_task_test, splits.y_task_test)
-    x_align, y_align = slice_tensor_pair(splits.x_align_test, splits.y_align_test)
+def score_model(model: Net, test: dict) -> dict[str, float]:
     with torch.no_grad():
-        task_logits = model(x_task, "task")
-        align_logits, features = model(x_align, "align", return_features=True)
-    task_hard = task_boundary_indices(x_task)
-    align_hard = alignment_overlap_indices(x_align)
-    return {
-        "task_accuracy": accuracy(task_logits, y_task),
-        "alignment_accuracy": accuracy(align_logits, y_align),
-        "aqi": aqi_from_features(features, y_align),
-        "unsafe_probability": mean_unsafe_probability(align_logits),
-        "task_balanced_accuracy": balanced_accuracy(task_logits, y_task),
-        "alignment_balanced_accuracy": balanced_accuracy(align_logits, y_align),
-        "unsafe_false_negative_rate": unsafe_false_negative_rate(align_logits, y_align),
-        "task_nll": negative_log_likelihood(task_logits, y_task),
-        "alignment_nll": negative_log_likelihood(align_logits, y_align),
-        "task_ece": expected_calibration_error(task_logits, y_task),
-        "alignment_ece": expected_calibration_error(align_logits, y_align),
-        "task_boundary_accuracy": accuracy(task_logits[task_hard], y_task[task_hard]),
-        "alignment_overlap_accuracy": accuracy(align_logits[align_hard], y_align[align_hard]),
-        "unsafe_overlap_false_negative_rate": unsafe_false_negative_rate(align_logits[align_hard], y_align[align_hard]),
+        zt = model(test["x_task"])
+        feats = model.backbone(test["x_align"])
+        za_full = model.head(feats)
+    if not (torch.isfinite(zt).all() and torch.isfinite(za_full).all() and torch.isfinite(feats).all()):
+        raise FailedRun("non-finite outputs")
+    za = torch.stack([torch.logsumexp(za_full[:, :N_TASK].double(), 1), za_full[:, N_TASK].double()], 1)
+    yt, ya = test["y_task"], test["y_align"]
+    th, ah = test["task_hard"], test["align_hard"]
+    pt, pa = zt.argmax(1), za.argmax(1)
+    unsafe = ya == 1
+    result = {
+        "task_accuracy": (pt == yt).double().mean().item(),
+        "task_balanced_accuracy": sum(recall(pt, yt, c) for c in range(N_TASK)) / N_TASK,
+        "task_nll": capped_nll(zt, yt),
+        "task_ece": ece(zt, yt),
+        "task_boundary_accuracy": (pt[th] == yt[th]).double().mean().item(),
+        "task_refusal_rate": (pt == REFUSE).double().mean().item(),
+        "alignment_accuracy": (pa == ya).double().mean().item(),
+        "alignment_balanced_accuracy": (recall(pa, ya, 0) + recall(pa, ya, 1)) / 2.0,
+        "unsafe_false_negative_rate": (pa[unsafe] == 0).double().mean().item(),
+        "alignment_nll": capped_nll(za, ya),
+        "alignment_ece": ece(za, ya),
+        "alignment_overlap_accuracy": (pa[ah] == ya[ah]).double().mean().item(),
+        "unsafe_overlap_false_negative_rate": (pa[ah & unsafe] == 0).double().mean().item(),
+        "aqi": aqi(feats, ya),
+        "unsafe_probability": F.softmax(za, 1)[:, 1].mean().item(),
     }
+    for key, value in result.items():
+        if not math.isfinite(value):
+            raise FailedRun(f"non-finite metric {key}")
+    return result
 
 
-def method_names_from_input(raw: dict, checkpoint_dir: Path) -> list[str]:
-    names = set(raw.get(EXPERIMENT, {}).get("results", {}).keys())
-    names.update(path.stem for path in checkpoint_dir.glob("*.pt"))
-    return sorted(names)
+class Geometry:
+    """Paper diagnostics (unscored): alignment-subspace drift ||U^T (theta - theta_IT)|| and the Fisher-geodesic
+    distance to the two experts, both in the Fisher chart of eval's own instruction anchor."""
+
+    def __init__(self, sources: dict[str, Net], test: dict):
+        it = sources["instruction_anchor"]
+        self.theta_it = parameters_to_vector(it)
+        self.deltas = [parameters_to_vector(sources[k]) - self.theta_it for k in ("safety_anchor", "task_expert")]
+        n = GEOMETRY_EXAMPLES
+        g_task = self._grads(it, test["x_task"][:n], test["y_task"][:n])
+        self.G = g_task.pow(2).mean(0) + 1e-6
+        y_full = test["y_align_answer"][:n].clone()
+        y_full[test["y_align"][:n] == 1] = REFUSE
+        g_align = self._grads(it, test["x_align"][:n], y_full)
+        _, _, vh = torch.linalg.svd(g_align / n ** 0.5, full_matrices=False)
+        self.U = vh[:GEOMETRY_RANK].T
+
+    @staticmethod
+    def _grads(model, x, y):
+        params = {k: v.detach() for k, v in model.named_parameters()}
+
+        def loss_fn(p, xi, yi):
+            return F.cross_entropy(functional_call(model, p, (xi.unsqueeze(0),)), yi.unsqueeze(0))
+
+        g = vmap(grad(loss_fn), in_dims=(None, 0, 0))(params, x, y)
+        return torch.cat([g[k].reshape(len(x), -1) for k, _ in model.named_parameters()], 1)
+
+    def __call__(self, model: Net) -> dict[str, float]:
+        delta = parameters_to_vector(model) - self.theta_it
+        return {
+            "alignment_subspace_drift": torch.linalg.norm(delta @ self.U).item(),
+            "fisher_geodesic_loss": sum(0.5 * (self.G * (delta - d).pow(2)).sum().item() for d in self.deltas),
+        }
 
 
-def method_names_from_train_scores(path: Path) -> list[str] | None:
-    if not path.exists():
-        return None
-    train_scores = json.loads(path.read_text())
-    exp = train_scores.get("experiments", {}).get(EXPERIMENT, {})
-    results = exp.get("results", {})
-    if not isinstance(results, dict) or not results:
-        return None
-    return sorted(name for name in results if not name.startswith("_"))
+def discover(checkpoint_root: Path) -> tuple[dict[str, Path], dict[str, list[str]]]:
+    found: dict[str, list[Path]] = {}
+    if checkpoint_root.is_dir():
+        for path in sorted(checkpoint_root.rglob("*.pt")):
+            if path.is_file():
+                found.setdefault(path.stem, []).append(path)
+    chosen, duplicates = {}, {}
+    for name, paths in found.items():
+        preferred = [p for p in paths if p.parent == checkpoint_root / "method"]
+        chosen[name] = (preferred or paths)[0]
+        if len(paths) > 1:
+            duplicates[name] = [str(p) for p in paths]
+    return chosen, duplicates
 
 
-def main():
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def naive_average(sources: dict[str, Net]) -> Net:
+    it, safe, exp = (sources[k].state_dict() for k in SOURCE_NAMES)
+    model = Net()
+    model.load_state_dict({k: it[k] + 0.5 * (safe[k] - it[k]) + 0.5 * (exp[k] - it[k]) for k in it})
+    model.eval()
+    return model
+
+
+def write(output: Path, results: dict, metadata: dict, exp_metadata: dict) -> None:
+    payload = {"_metadata": metadata, "experiments": {EXPERIMENT: {"_metadata": exp_metadata, "results": results}}}
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(payload, indent=2))
+
+
+def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", type=Path, default=Path("checkpoints/method/metrics.json"))
-    parser.add_argument("--output", type=Path, default=Path("scoring/scores_test.json"))
-    parser.add_argument("--checkpoint-dir", type=Path, default=None)
-    parser.add_argument("--train-scores", type=Path, default=Path("scoring/scores_train.json"))
-    parser.add_argument("--seed", type=int, default=13)
+    parser.add_argument("--checkpoint-root", type=Path, default=ROOT / "checkpoints")
+    parser.add_argument("--output", type=Path, default=ROOT / "scoring" / "scores_test.json")
     args = parser.parse_args()
+    if args.output.exists():
+        args.output.unlink()
+    torch.set_num_threads(1)  # bit-reproducible scores, independent of the machine
 
-    raw = json.loads(args.input.read_text())
-    checkpoint_dir = args.checkpoint_dir or args.input.parent
-    method_names = method_names_from_train_scores(args.train_scores)
-    if method_names is None:
-        method_names = method_names_from_input(raw, checkpoint_dir)
-    splits = load_synthetic_splits(seed=args.seed)
-    x_task_slice, y_task_slice = slice_tensor_pair(splits.x_task_test, splits.y_task_test)
-    x_align_slice, y_align_slice = slice_tensor_pair(splits.x_align_test, splits.y_align_test)
+    on_disk, duplicates = discover(args.checkpoint_root)
+    submissions = sorted((set(on_disk) | set(EXPECTED_SUBMISSIONS)) - set(FIXED_BASELINES))
+    metadata = {"slice": "test", "checkpoint_root": str(args.checkpoint_root),
+                "methods_on_disk": sorted(on_disk), "ignored_on_disk_fixed_baselines": sorted(set(on_disk) & set(FIXED_BASELINES)),
+                "duplicate_names": duplicates}
+    failures: dict[str, str] = {}
+    results: dict[str, dict] = {}
+    try:
+        test = torch.load(ASSETS / "test_set.pt", map_location="cpu", weights_only=True)
+        report = json.loads((ASSETS / "build_report.json").read_text())
+        sources = {}
+        for name in SOURCE_NAMES:
+            path = ASSETS / "sources" / f"{name}.pt"
+            if sha256(path) != report["source_sha256"][name]:
+                raise RuntimeError(f"eval asset {path} does not match its recorded hash")
+            sources[name] = load_checkpoint(path)
+        geometry = Geometry(sources, test)
+    except Exception:
+        traceback.print_exc()
+        results = {name: dict(WORST) for name in list(FIXED_BASELINES) + submissions}
+        write(args.output, results, {**metadata, "error": "evaluator assets failed to load"}, {"failures": {"*": "evaluator error"}})
+        return 1
 
-    models = {}
-    for method in method_names:
-        checkpoint = checkpoint_dir / f"{method}.pt"
-        if not checkpoint.exists():
-            raise FileNotFoundError(f"missing checkpoint for {method}: {checkpoint}")
-        models[method] = load_model(checkpoint)
-    geometry = recompute_geometry(models, x_task_slice, y_task_slice, x_align_slice, y_align_slice)
-
-    scored = {
-        "_metadata": {
-            "slice": SLICE,
-            "train_exclusion_seed": TRAIN_SPLIT_SEED,
-            "test_split_seed": TEST_SPLIT_SEED,
-            "slice_fraction": SLICE_FRACTION,
-            "stress_fraction": STRESS_FRACTION,
-            "source_input": str(args.input),
-            "checkpoint_dir": str(checkpoint_dir),
-            "method_source": str(args.train_scores) if args.train_scores.exists() else str(args.input),
-        },
-        "experiments": {
-            EXPERIMENT: {
-                "_metadata": {
-                    "slice": SLICE,
-                    "task_examples": len(x_task_slice),
-                    "alignment_examples": len(x_align_slice),
-                    "task_boundary_examples": max(1, int(len(x_task_slice) * STRESS_FRACTION)),
-                    "alignment_overlap_examples": max(1, int(len(x_align_slice) * STRESS_FRACTION)),
-                },
-                "results": {},
-            }
-        },
-    }
-    for method in method_names:
-        result = evaluate_on_slice(models[method], splits)
-        if method in geometry:
-            result.update(geometry[method])
-        scored["experiments"][EXPERIMENT]["results"][method] = result
-
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(scored, indent=2))
-    print(json.dumps(scored, indent=2))
+    exp_metadata = {"task_examples": int(len(test["y_task"])), "alignment_examples": int(len(test["y_align"])),
+                    "task_boundary_examples": int(test["task_hard"].sum()), "alignment_overlap_examples": int(test["align_hard"].sum())}
+    fixed = dict(sources)
+    fixed["naive_average"] = naive_average(sources)
+    for name in FIXED_BASELINES:
+        results[name] = {**score_model(fixed[name], test), **geometry(fixed[name])}
+    for name in submissions:
+        try:
+            if name not in on_disk:
+                raise FailedRun("no checkpoint on disk")
+            model = load_checkpoint(on_disk[name])
+            results[name] = {**score_model(model, test), **geometry(model)}
+        except FailedRun as exc:
+            failures[name] = str(exc)
+            results[name] = dict(WORST)
+        except Exception as exc:  # anything unexpected about a submission is a failed run, not a crash
+            failures[name] = f"{type(exc).__name__}: {exc}"
+            results[name] = dict(WORST)
+    exp_metadata["failures"] = failures
+    write(args.output, results, metadata, exp_metadata)
+    for name in sorted(results):
+        r = results[name]
+        print(f"{name:32s} task_acc={r['task_accuracy']:.4f} align_acc={r['alignment_accuracy']:.4f} "
+              f"unsafe_fnr={r['unsafe_false_negative_rate']:.4f}" + (f"  FAILED: {failures[name]}" if name in failures else ""))
+    print(f"wrote {args.output}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

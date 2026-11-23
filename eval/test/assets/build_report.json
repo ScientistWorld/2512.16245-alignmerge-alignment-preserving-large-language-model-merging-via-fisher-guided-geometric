@@ -1,0 +1,44 @@
+{
+  "world_seed": 4242,
+  "sizes": {
+    "private": 60000,
+    "calibration": 1024,
+    "test": 20000
+  },
+  "source_sha256": {
+    "instruction_anchor": "f5aec0cf19b4363311a6f4a66e5d314bf0ba77cead261b24ea7a42bbdc80cb87",
+    "safety_anchor": "1f6c735355452034dbc9eb3b7a3cd2da1d72233a262de6038c04b2df9af04926",
+    "task_expert": "cf1a8a1427fd66e530a442bdcf29933f142023be6352e4601461d24faf141cba"
+  },
+  "test_bayes": {
+    "task_accuracy": 0.9150999784469604,
+    "alignment_accuracy": 0.9125000238418579
+  },
+  "test_sources": {
+    "instruction_anchor": {
+      "task_accuracy": 0.6827499866485596,
+      "alignment_accuracy": 0.8630499839782715,
+      "unsafe_false_negative_rate": 0.1265958547592163,
+      "task_refusal_rate": 0.08585000038146973
+    },
+    "safety_anchor": {
+      "task_accuracy": 0.6421499848365784,
+      "alignment_accuracy": 0.878849983215332,
+      "unsafe_false_negative_rate": 0.10827405005693436,
+      "task_refusal_rate": 0.1559000015258789
+    },
+    "task_expert": {
+      "task_accuracy": 0.883650004863739,
+      "alignment_accuracy": 0.48695001006126404,
+      "unsafe_false_negative_rate": 1.0,
+      "task_refusal_rate": 0.0
+    }
+  },
+  "test_oracle_joint_training_on_private_data": {
+    "task_accuracy": 0.8676499724388123,
+    "alignment_accuracy": 0.8851500153541565,
+    "unsafe_false_negative_rate": 0.10944352298974991,
+    "task_refusal_rate": 0.004000000189989805
+  },
+  "torch": "2.15.0+cpu"
+}
