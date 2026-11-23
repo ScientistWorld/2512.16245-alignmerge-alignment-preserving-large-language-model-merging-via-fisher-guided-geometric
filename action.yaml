@@ -1,8 +1,6 @@
 # Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends.
-action: submit
-gpus: 0
-test: false
+action: done
 milestone: core_claim
-notes: "Hardening verification (CPU): clean reference reproduction (AlignMerge + ablations, baselines, train slice, hidden test, validate.py) on the redesigned gym, then redteam/v2/run_all.sh runs every better/weaker variant and shortcut through the hidden test and writes redteam/v2/summary.{md,json}."
+notes: "Hardened: hidden world with frozen sources and a 20k+20k test set in eval/test, self-contained evaluator with worst-value failures, paper's AlignMerge restored. Better variants beat the reference by 4-19 paired SE and closed shortcuts tie or fail. Distillation on synthetic inputs (+0.48) is left to the grader via CONSTRAINTS. See HARDENING.md."
