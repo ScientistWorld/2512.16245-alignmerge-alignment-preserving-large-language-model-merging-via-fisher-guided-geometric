@@ -32,3 +32,7 @@
 - Final verification confirmed that `python validate.py --compare` passes and the existing container logs show dependencies and executable scripts completed successfully.
 - Tightened method-agnostic documentation in `briefing/` and `scoring/` so from-scratch agents see the problem and scoring rubric without the paper's solution recipe.
 - The remaining limitation is deliberate: the gym is a scaled synthetic reproduction because the paper bundle does not provide executable LLM code or non-placeholder headline tables.
+
+### [2026-11-23 01:05] - core_claim
+- Hardening (iteration 11): redesigned the synthetic world so the task expert carries real utility and forgets refusals; frozen sources and a 20k+20k hidden test live in `eval/test/`; self-contained hidden evaluator with worst-value failures; paper's AlignMerge objective restored on the frozen sources.
+- Container job `6fe4fef1-86c`: reference align 0.8452 / task 0.7767; AlignMerge beats naive averaging on alignment (0.845 vs 0.523) and the no-align ablation; three honest better variants score 4-19 paired SE above the reference; every closed shortcut ties or fails. Details in `HARDENING.md`.
