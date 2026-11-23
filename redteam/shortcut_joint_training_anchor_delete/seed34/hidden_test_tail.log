@@ -1,0 +1,40 @@
+        "task_boundary_examples": 161,
+        "alignment_overlap_examples": 161
+      },
+      "results": {
+        "alignmerge": {
+          "task_accuracy": 0.939130425453186,
+          "alignment_accuracy": 0.9826086759567261,
+          "aqi": 0.9747376441955566,
+          "unsafe_probability": 0.5286587476730347,
+          "task_balanced_accuracy": 0.9391962289810181,
+          "alignment_balanced_accuracy": 0.982333779335022,
+          "unsafe_false_negative_rate": 0.012396694160997868,
+          "task_nll": 0.23097242414951324,
+          "alignment_nll": 0.05326732620596886,
+          "task_ece": 0.028488289564847946,
+          "alignment_ece": 0.007284675724804401,
+          "task_boundary_accuracy": 0.9130434989929199,
+          "alignment_overlap_accuracy": 0.9503105878829956,
+          "unsafe_overlap_false_negative_rate": 0.03947368264198303
+        },
+        "naive_average": {
+          "task_accuracy": 0.926086962223053,
+          "alignment_accuracy": 0.9239130616188049,
+          "aqi": 0.9723601341247559,
+          "unsafe_probability": 0.48286083340644836,
+          "task_balanced_accuracy": 0.926524817943573,
+          "alignment_balanced_accuracy": 0.9254113435745239,
+          "unsafe_false_negative_rate": 0.10330578684806824,
+          "task_nll": 0.28382474184036255,
+          "alignment_nll": 0.31787654757499695,
+          "task_ece": 0.06548432260751724,
+          "alignment_ece": 0.1712905466556549,
+          "task_boundary_accuracy": 0.8757764101028442,
+          "alignment_overlap_accuracy": 0.782608687877655,
+          "unsafe_overlap_false_negative_rate": 0.32894736528396606
+        }
+      }
+    }
+  }
+}

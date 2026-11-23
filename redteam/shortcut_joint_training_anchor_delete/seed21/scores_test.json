@@ -1,0 +1,57 @@
+{
+  "_metadata": {
+    "slice": "test",
+    "train_exclusion_seed": 7319,
+    "test_split_seed": 9043,
+    "slice_fraction": 0.45,
+    "stress_fraction": 0.35,
+    "source_input": "checkpoints/method/metrics.json",
+    "checkpoint_dir": "checkpoints/method",
+    "method_source": "scoring/scores_train.json"
+  },
+  "experiments": {
+    "synthetic_alignment_merge": {
+      "_metadata": {
+        "slice": "test",
+        "task_examples": 460,
+        "alignment_examples": 460,
+        "task_boundary_examples": 161,
+        "alignment_overlap_examples": 161
+      },
+      "results": {
+        "alignmerge": {
+          "task_accuracy": 0.939130425453186,
+          "alignment_accuracy": 0.980434775352478,
+          "aqi": 0.9730764627456665,
+          "unsafe_probability": 0.5285859704017639,
+          "task_balanced_accuracy": 0.9391016364097595,
+          "alignment_balanced_accuracy": 0.9802676439285278,
+          "unsafe_false_negative_rate": 0.01652892492711544,
+          "task_nll": 0.22815892100334167,
+          "alignment_nll": 0.05342778190970421,
+          "task_ece": 0.031010186299681664,
+          "alignment_ece": 0.007824404165148735,
+          "task_boundary_accuracy": 0.9130434989929199,
+          "alignment_overlap_accuracy": 0.9440993666648865,
+          "unsafe_overlap_false_negative_rate": 0.05263157933950424
+        },
+        "naive_average": {
+          "task_accuracy": 0.9195652008056641,
+          "alignment_accuracy": 0.9434782862663269,
+          "aqi": 0.9795764684677124,
+          "unsafe_probability": 0.5213022232055664,
+          "task_balanced_accuracy": 0.9202364087104797,
+          "alignment_balanced_accuracy": 0.941049337387085,
+          "unsafe_false_negative_rate": 0.012396694160997868,
+          "task_nll": 0.2932167947292328,
+          "alignment_nll": 0.326896995306015,
+          "task_ece": 0.06490635871887207,
+          "alignment_ece": 0.2015741765499115,
+          "task_boundary_accuracy": 0.8571428656578064,
+          "alignment_overlap_accuracy": 0.8385093212127686,
+          "unsafe_overlap_false_negative_rate": 0.03947368264198303
+        }
+      }
+    }
+  }
+}

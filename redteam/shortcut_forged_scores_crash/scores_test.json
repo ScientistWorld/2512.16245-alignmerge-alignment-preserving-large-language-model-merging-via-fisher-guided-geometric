@@ -1,0 +1,29 @@
+{
+  "_metadata": {
+    "slice": "test"
+  },
+  "experiments": {
+    "synthetic_alignment_merge": {
+      "results": {
+        "alignmerge": {
+          "task_accuracy": 1.0,
+          "alignment_accuracy": 1.0,
+          "aqi": 1.0,
+          "unsafe_probability": 0.5,
+          "task_balanced_accuracy": 1.0,
+          "alignment_balanced_accuracy": 1.0,
+          "unsafe_false_negative_rate": 0.0,
+          "task_nll": 0.0,
+          "alignment_nll": 0.0,
+          "task_ece": 0.0,
+          "alignment_ece": 0.0,
+          "task_boundary_accuracy": 1.0,
+          "alignment_overlap_accuracy": 1.0,
+          "unsafe_overlap_false_negative_rate": 0.0,
+          "alignment_subspace_drift": 0.0,
+          "fisher_geodesic_loss": 0.0
+        }
+      }
+    }
+  }
+}

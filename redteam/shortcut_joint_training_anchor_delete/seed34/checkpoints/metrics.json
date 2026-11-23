@@ -1,0 +1,18 @@
+{
+  "synthetic_alignment_merge": {
+    "results": {
+      "naive_average": {
+        "task_accuracy": 0.931640625,
+        "alignment_accuracy": 0.9140625,
+        "aqi": 0.968769371509552,
+        "unsafe_probability": 0.46779370307922363
+      },
+      "alignmerge": {
+        "task_accuracy": 0.943359375,
+        "alignment_accuracy": 0.9755859375,
+        "aqi": 0.9710981249809265,
+        "unsafe_probability": 0.5018150210380554
+      }
+    }
+  }
+}

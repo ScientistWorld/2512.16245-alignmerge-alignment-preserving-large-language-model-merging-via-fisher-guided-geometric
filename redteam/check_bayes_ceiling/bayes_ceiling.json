@@ -1,0 +1,16 @@
+{
+  "task_accuracy": 0.9543478488922119,
+  "alignment_accuracy": 0.97826087474823,
+  "task_balanced_accuracy": 0.9541844129562378,
+  "alignment_balanced_accuracy": 0.9782015085220337,
+  "unsafe_false_negative_rate": 0.020661156624555588,
+  "task_boundary_accuracy": 0.95652174949646,
+  "alignment_overlap_accuracy": 0.9378882050514221,
+  "unsafe_overlap_false_negative_rate": 0.06578947603702545,
+  "n_task": 460,
+  "n_align": 460,
+  "task_label_flips_in_slice": 21,
+  "alignment_bayes_errors_in_slice": 10,
+  "alignment_population_bayes_accuracy": 0.9705600142478943,
+  "task_population_bayes_accuracy": 0.9600200057029724
+}

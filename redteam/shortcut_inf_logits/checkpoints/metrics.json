@@ -1,0 +1,45 @@
+{
+  "synthetic_alignment_merge": {
+    "results": {
+      "naive_average": {
+        "task_accuracy": 0.9150390625,
+        "alignment_accuracy": 0.9345703125,
+        "aqi": 0.9763410687446594,
+        "unsafe_probability": 0.5323238372802734
+      },
+      "alignmerge": {
+        "task_accuracy": 0.9228515625,
+        "alignment_accuracy": 0.970703125,
+        "aqi": 0.9776064157485962,
+        "unsafe_probability": 0.5115106105804443,
+        "alignment_subspace_drift": 0.008396531455218792,
+        "fisher_geodesic_loss": 1.243137739947997e-05,
+        "target_aqi": 0.9545994114875793,
+        "lambda_align": 12.0,
+        "lambda_budget": 18.0
+      },
+      "alignmerge_no_align": {
+        "task_accuracy": 0.9150390625,
+        "alignment_accuracy": 0.9248046875,
+        "aqi": 0.9762128591537476,
+        "unsafe_probability": 0.5327723026275635,
+        "alignment_subspace_drift": 0.647213339805603,
+        "fisher_geodesic_loss": 1.2663447493312802e-14,
+        "target_aqi": 0.9545994114875793,
+        "lambda_align": 0.0,
+        "lambda_budget": 18.0
+      },
+      "alignmerge_no_budget": {
+        "task_accuracy": 0.9208984375,
+        "alignment_accuracy": 0.970703125,
+        "aqi": 0.9783128499984741,
+        "unsafe_probability": 0.5091732740402222,
+        "alignment_subspace_drift": 0.0063683632761240005,
+        "fisher_geodesic_loss": 1.1990533494099509e-05,
+        "target_aqi": 0.9545994114875793,
+        "lambda_align": 12.0,
+        "lambda_budget": 0.0
+      }
+    }
+  }
+}

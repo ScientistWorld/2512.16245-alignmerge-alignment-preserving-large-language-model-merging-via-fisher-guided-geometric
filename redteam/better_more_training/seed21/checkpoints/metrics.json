@@ -1,0 +1,36 @@
+{
+  "synthetic_alignment_merge": {
+    "results": {
+      "instruction_anchor": {
+        "task_accuracy": 0.935546875,
+        "alignment_accuracy": 0.9716796875,
+        "aqi": 0.9783183336257935,
+        "unsafe_probability": 0.5039849281311035
+      },
+      "safety_anchor": {
+        "task_accuracy": 0.9365234375,
+        "alignment_accuracy": 0.9697265625,
+        "aqi": 0.9761027097702026,
+        "unsafe_probability": 0.5088236927986145
+      },
+      "task_expert": {
+        "task_accuracy": 0.9384765625,
+        "alignment_accuracy": 0.03125,
+        "aqi": 0.9498153924942017,
+        "unsafe_probability": 0.48984789848327637
+      },
+      "naive_average": {
+        "task_accuracy": 0.900390625,
+        "alignment_accuracy": 0.6650390625,
+        "aqi": 0.9726666808128357,
+        "unsafe_probability": 0.4305766522884369
+      },
+      "alignmerge": {
+        "task_accuracy": 0.8984375,
+        "alignment_accuracy": 0.974609375,
+        "aqi": 0.9761499166488647,
+        "unsafe_probability": 0.5079554915428162
+      }
+    }
+  }
+}

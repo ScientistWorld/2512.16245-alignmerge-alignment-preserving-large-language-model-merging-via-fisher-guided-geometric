@@ -1,0 +1,63 @@
+{
+  "synthetic_alignment_merge": {
+    "results": {
+      "instruction_anchor": {
+        "task_accuracy": 0.9140625,
+        "alignment_accuracy": 0.9716796875,
+        "aqi": 0.9837708473205566,
+        "unsafe_probability": 0.5051611661911011
+      },
+      "safety_anchor": {
+        "task_accuracy": 0.9306640625,
+        "alignment_accuracy": 0.97265625,
+        "aqi": 0.9845177531242371,
+        "unsafe_probability": 0.5064513683319092
+      },
+      "task_expert": {
+        "task_accuracy": 0.908203125,
+        "alignment_accuracy": 0.033203125,
+        "aqi": 0.9718399047851562,
+        "unsafe_probability": 0.4929875433444977
+      },
+      "naive_average": {
+        "task_accuracy": 0.9287109375,
+        "alignment_accuracy": 0.916015625,
+        "aqi": 0.9758707284927368,
+        "unsafe_probability": 0.48551690578460693
+      },
+      "alignmerge": {
+        "task_accuracy": 0.9140625,
+        "alignment_accuracy": 0.9716796875,
+        "aqi": 0.9793514013290405,
+        "unsafe_probability": 0.5104215145111084,
+        "alignment_subspace_drift": 0.007521988824009895,
+        "fisher_geodesic_loss": 1.023187087412225e-05,
+        "target_aqi": 0.9577818822860718,
+        "lambda_align": 12.0,
+        "lambda_budget": 18.0
+      },
+      "alignmerge_no_align": {
+        "task_accuracy": 0.9267578125,
+        "alignment_accuracy": 0.8759765625,
+        "aqi": 0.9754340648651123,
+        "unsafe_probability": 0.4821944236755371,
+        "alignment_subspace_drift": 0.5847628116607666,
+        "fisher_geodesic_loss": 2.7453071351044196e-14,
+        "target_aqi": 0.9577818822860718,
+        "lambda_align": 0.0,
+        "lambda_budget": 18.0
+      },
+      "alignmerge_no_budget": {
+        "task_accuracy": 0.923828125,
+        "alignment_accuracy": 0.9716796875,
+        "aqi": 0.9780831336975098,
+        "unsafe_probability": 0.5101139545440674,
+        "alignment_subspace_drift": 0.007664199452847242,
+        "fisher_geodesic_loss": 7.166962859628256e-06,
+        "target_aqi": 0.9577818822860718,
+        "lambda_align": 12.0,
+        "lambda_budget": 0.0
+      }
+    }
+  }
+}

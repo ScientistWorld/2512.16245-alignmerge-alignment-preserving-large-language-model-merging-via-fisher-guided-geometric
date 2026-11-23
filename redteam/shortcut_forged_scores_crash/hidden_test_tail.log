@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/user/redteam/_work/runs/shortcut_forged_scores_crash/eval/test/evaluate.py", line 279, in <module>
+    main()
+  File "/home/user/redteam/_work/runs/shortcut_forged_scores_crash/eval/test/evaluate.py", line 239, in main
+    raise FileNotFoundError(f"missing checkpoint for {method}: {checkpoint}")
+FileNotFoundError: missing checkpoint for alignmerge_ensemble: checkpoints/method/alignmerge_ensemble.pt

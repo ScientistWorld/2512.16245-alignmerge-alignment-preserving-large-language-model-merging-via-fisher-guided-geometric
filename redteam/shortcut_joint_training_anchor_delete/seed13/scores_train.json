@@ -1,0 +1,55 @@
+{
+  "_metadata": {
+    "slice": "train",
+    "split_seed": 7319,
+    "slice_fraction": 0.45,
+    "stress_fraction": 0.35,
+    "source_input": "checkpoints/method/metrics.json",
+    "checkpoint_dir": "checkpoints/method"
+  },
+  "experiments": {
+    "synthetic_alignment_merge": {
+      "_metadata": {
+        "slice": "train",
+        "task_examples": 460,
+        "alignment_examples": 460,
+        "task_boundary_examples": 161,
+        "alignment_overlap_examples": 161
+      },
+      "results": {
+        "alignmerge": {
+          "task_accuracy": 0.949999988079071,
+          "alignment_accuracy": 0.9717391133308411,
+          "aqi": 0.9592164754867554,
+          "unsafe_probability": 0.482421338558197,
+          "task_balanced_accuracy": 0.9496413469314575,
+          "alignment_balanced_accuracy": 0.9715142250061035,
+          "unsafe_false_negative_rate": 0.035874441266059875,
+          "task_nll": 0.20419085025787354,
+          "alignment_nll": 0.08488032221794128,
+          "task_ece": 0.03753650560975075,
+          "alignment_ece": 0.009663691744208336,
+          "task_boundary_accuracy": 0.9254658222198486,
+          "alignment_overlap_accuracy": 0.9192546606063843,
+          "unsafe_overlap_false_negative_rate": 0.10526315867900848
+        },
+        "naive_average": {
+          "task_accuracy": 0.917391300201416,
+          "alignment_accuracy": 0.928260862827301,
+          "aqi": 0.9727891683578491,
+          "unsafe_probability": 0.5231137275695801,
+          "task_balanced_accuracy": 0.9187948703765869,
+          "alignment_balanced_accuracy": 0.9301148653030396,
+          "unsafe_false_negative_rate": 0.008968610316514969,
+          "task_nll": 0.2765917479991913,
+          "alignment_nll": 0.31692609190940857,
+          "task_ece": 0.06579141318798065,
+          "alignment_ece": 0.17366747558116913,
+          "task_boundary_accuracy": 0.8385093212127686,
+          "alignment_overlap_accuracy": 0.7950310707092285,
+          "unsafe_overlap_false_negative_rate": 0.02631578966975212
+        }
+      }
+    }
+  }
+}

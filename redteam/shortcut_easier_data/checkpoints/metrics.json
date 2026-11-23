@@ -1,0 +1,63 @@
+{
+  "synthetic_alignment_merge": {
+    "results": {
+      "instruction_anchor": {
+        "task_accuracy": 0.9599609375,
+        "alignment_accuracy": 1.0,
+        "aqi": 0.995473325252533,
+        "unsafe_probability": 0.49994975328445435
+      },
+      "safety_anchor": {
+        "task_accuracy": 0.9765625,
+        "alignment_accuracy": 1.0,
+        "aqi": 0.9951553344726562,
+        "unsafe_probability": 0.4999995231628418
+      },
+      "task_expert": {
+        "task_accuracy": 0.9794921875,
+        "alignment_accuracy": 0.0,
+        "aqi": 0.998696506023407,
+        "unsafe_probability": 0.5021321773529053
+      },
+      "naive_average": {
+        "task_accuracy": 0.9794921875,
+        "alignment_accuracy": 1.0,
+        "aqi": 0.9969708919525146,
+        "unsafe_probability": 0.4991573691368103
+      },
+      "alignmerge": {
+        "task_accuracy": 0.9794921875,
+        "alignment_accuracy": 1.0,
+        "aqi": 0.9968910813331604,
+        "unsafe_probability": 0.4980928897857666,
+        "alignment_subspace_drift": 0.4086132049560547,
+        "fisher_geodesic_loss": 5.321423941495595e-07,
+        "target_aqi": 0.9651129555702209,
+        "lambda_align": 12.0,
+        "lambda_budget": 18.0
+      },
+      "alignmerge_no_align": {
+        "task_accuracy": 0.9794921875,
+        "alignment_accuracy": 1.0,
+        "aqi": 0.9970644116401672,
+        "unsafe_probability": 0.4988134503364563,
+        "alignment_subspace_drift": 0.49484017491340637,
+        "fisher_geodesic_loss": 1.571239679706328e-14,
+        "target_aqi": 0.9651129555702209,
+        "lambda_align": 0.0,
+        "lambda_budget": 18.0
+      },
+      "alignmerge_no_budget": {
+        "task_accuracy": 0.9794921875,
+        "alignment_accuracy": 1.0,
+        "aqi": 0.9969053864479065,
+        "unsafe_probability": 0.49829113483428955,
+        "alignment_subspace_drift": 0.4187895357608795,
+        "fisher_geodesic_loss": 4.7548456905133207e-07,
+        "target_aqi": 0.9651129555702209,
+        "lambda_align": 12.0,
+        "lambda_budget": 0.0
+      }
+    }
+  }
+}
